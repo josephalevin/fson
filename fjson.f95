@@ -11,7 +11,7 @@ module fjson
     
     private
     
-    public :: json, json_read, json_write, is_object
+    public :: json, open_json_file, json_write, is_object
     
     !constants for the value types
     integer, parameter :: TYPE_NULL = 0
@@ -26,7 +26,7 @@ module fjson
     
     type json
         character (len=25) ::name
-        integer :: value_type
+        integer :: value_type = TYPE_NULL
         logical :: value_boolean
         integer :: value_integer
         real    :: value_real
@@ -38,8 +38,12 @@ module fjson
         
         contains
     
-    subroutine json_read ()
+    subroutine open_json_file (j, file)
         implicit none
+        
+        type(json), intent(out) :: j
+        character(len=*), intent(in) :: file
+                
         write (*,*) "Hello, World"
         write (*,*) TYPE_ARRAY
     end subroutine
@@ -50,8 +54,8 @@ module fjson
     
     function is_null(this)
         type (json), intent(in) :: this
-        logical :: is_object
-        is_object = TYPE_NULL .eq. this%value_type
+        logical :: is_null
+        is_null = TYPE_NULL .eq. this%value_type
     end function
     
     function is_object(this)
@@ -62,9 +66,11 @@ module fjson
     
     function is_array(this)
         type (json), intent(in) :: this
-        logical :: is_object
-        is_object = TYPE_ARRAY .eq. this%value_type
+        logical :: is_array
+        is_array = TYPE_ARRAY .eq. this%value_type
     end function
+    
+    
 
 end module
 
