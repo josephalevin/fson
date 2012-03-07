@@ -5,37 +5,80 @@
 ! Created on March 6, 2012, 7:48 PM
 !
 
-MODULE fjson
+module fjson
 
-    IMPLICIT NONE
+    implicit none
     
-    PRIVATE
+    private
     
-    PUBLIC :: json_read
+    public :: json, json_read, json_write, is_object
     
-    TYPE json
+    !constants for the value types
+    integer, parameter :: TYPE_NULL = 0
+    integer, parameter :: TYPE_OBJECT = 1
+    integer, parameter :: TYPE_ARRAY = 2
+    integer, parameter :: TYPE_STRING = 3
+    integer, parameter :: TYPE_INTEGER = 4
+    integer, parameter :: TYPE_REAL = 5
+    integer, parameter :: TYPE_BOOLEAN = 6
+    
+    
+    
+    type json
+        character (len=25) ::name
+        integer :: value_type
+        logical :: value_boolean
+        integer :: value_integer
+        real    :: value_real
+        character (len=100) :: value_string        
+        type (json), dimension (:), pointer :: value_array        
+    end type json
         
         
-    END TYPE json
-
-    CONTAINS
+        
+        contains
     
-    SUBROUTINE json_read ()
-        IMPLICIT NONE
+    subroutine json_read ()
+        implicit none
         write (*,*) "Hello, World"
-    END SUBROUTINE json_read
+        write (*,*) TYPE_ARRAY
+    end subroutine
     
+    subroutine json_write( )
+        implicit none
+    end subroutine
+    
+    function is_null(this)
+        type (json), intent(in) :: this
+        logical :: is_object
+        is_object = TYPE_NULL .eq. this%value_type
+    end function
+    
+    function is_object(this)
+        type (json), intent(in) :: this
+        logical :: is_object
+        is_object = TYPE_OBJECT .eq. this%value_type
+    end function
+    
+    function is_array(this)
+        type (json), intent(in) :: this
+        logical :: is_object
+        is_object = TYPE_ARRAY .eq. this%value_type
+    end function
 
-END MODULE fjson
+end module
 
-PROGRAM main
-    USE fjson
+program main
+    use fjson
+    implicit none
     
-    IMPLICIT NONE
+    type(json) :: j
     
-    call json_read
+    j%value_type=1
     
+    write (*,*) is_object(j)
+        
     
-END PROGRAM main
+end program
     
     
