@@ -34,7 +34,9 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/fjson.o
+	${OBJECTDIR}/fson.o \
+	${OBJECTDIR}/string_m.o \
+	${OBJECTDIR}/value_m.o
 
 
 # C Compiler Flags
@@ -55,15 +57,23 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fjson
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fson
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fjson: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fson: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.f} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fjson ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.f} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fson ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
-${OBJECTDIR}/fjson.o: fjson.f95 
+${OBJECTDIR}/fson.o: fson.f95 
 	${MKDIR} -p ${OBJECTDIR}
-	$(COMPILE.f) -g -o ${OBJECTDIR}/fjson.o fjson.f95
+	$(COMPILE.f) -g -o ${OBJECTDIR}/fson.o fson.f95
+
+${OBJECTDIR}/string_m.o: string_m.f95 
+	${MKDIR} -p ${OBJECTDIR}
+	$(COMPILE.f) -g -o ${OBJECTDIR}/string_m.o string_m.f95
+
+${OBJECTDIR}/value_m.o: value_m.f95 
+	${MKDIR} -p ${OBJECTDIR}
+	$(COMPILE.f) -g -o ${OBJECTDIR}/value_m.o value_m.f95
 
 # Subprojects
 .build-subprojects:
@@ -71,7 +81,7 @@ ${OBJECTDIR}/fjson.o: fjson.f95
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fjson
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fson
 	${RM} *.mod
 
 # Subprojects

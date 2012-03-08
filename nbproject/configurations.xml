@@ -8,7 +8,9 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>fjson.f95</itemPath>
+      <itemPath>fson.f95</itemPath>
+      <itemPath>string_m.f95</itemPath>
+      <itemPath>value_m.f95</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -30,6 +32,9 @@
         <compilerSet>GNU|GNU</compilerSet>
       </toolsSet>
       <compileType>
+        <fortranCompilerTool>
+          <commandlineTool>gfortran</commandlineTool>
+        </fortranCompilerTool>
       </compileType>
     </conf>
     <conf name="Release" type="1">

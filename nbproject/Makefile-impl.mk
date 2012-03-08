@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=fjson
+PROJECTNAME=fson
 
 # Active Configuration
 DEFAULTCONF=Debug
