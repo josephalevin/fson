@@ -1,5 +1,5 @@
 !     
-! File:   fjson.f95
+! File:   fson.f95
 ! Author: josephalevin
 !
 ! Created on March 6, 2012, 7:48 PM
@@ -35,18 +35,18 @@ program main
     integer, parameter :: end_of_record = -2
     integer :: i, n, ios, kount
     character (len = 1) :: c
-    character (len = 30) :: x
+    character (len = 100) :: x
     type(string) :: str
     
-    x = "Hello, world!"
+   
 
-
+    
     open (unit = 10, file = "test1.json", status = "old", action = "read", form = "formatted", position = "rewind")
         
-
-    kount = 0
+    
     do
         read (unit = 10, fmt = "(a)", advance = "no", iostat = ios) c
+        call string_append(str, c)
         if (ios == end_of_record) then
             cycle
         else if (ios == end_of_file) then
@@ -67,12 +67,10 @@ program main
         end if
     end do
 
-    
-    print *, size(str)
-    call append(str, "Hello, world!")
-    
-  
-    print *, size(str)
+          
+    print *, string_length(str)
+    call string_copy(str, x)
+    print *, trim(x) // " Hi"
 
 end program main
 

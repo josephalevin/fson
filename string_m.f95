@@ -9,7 +9,7 @@ module string_m
 
     private
 
-    public :: string, size, append
+    public :: string, string_length, string_append, string_clear, string_copy
 
     integer, parameter :: BLOCK_SIZE = 5
 
@@ -19,9 +19,13 @@ module string_m
         type(string), pointer :: next => null()
     end type string
 
-    interface append
+    interface string_append
         module procedure append_chars, append_string
-    end interface append
+    end interface string_append
+
+    interface string_copy
+        module procedure copy_chars
+    end interface string_copy
 
 contains
 
@@ -31,7 +35,7 @@ contains
     subroutine allocate_block(this)
         type(string), intent(inout) :: this
         type(string), pointer :: new
-        
+
         if (.not.associated(this % next)) then
             allocate(new)
             this % next => new
@@ -41,14 +45,17 @@ contains
 
 
     !
-    ! APPEND_CHARS
+    ! APPEND_STRING
     !
     subroutine append_string(str1, str2)
         type(string), intent(inout) :: str1, str2
-        integer length
+        integer length, i
 
-        length = size(str2)
+        length = string_length(str2)
 
+        do i = 1, length
+            call append_char(str1, get_char_at(str2, i))
+        end do
 
 
     end subroutine append_string
@@ -90,33 +97,72 @@ contains
     end subroutine append_char
 
     !
+    ! COPY CHARS
+    !
+    subroutine copy_chars(this, to)
+        type(string), intent(in) :: this
+        character(len = *), intent(inout) :: to
+        integer :: length
+        
+        length = min(string_length(this), len(to))
+        
+        do i = 1, length
+            to(i:i) = get_char_at(this, i)
+        end do
+        
+        ! pad with nothing
+        do i = length + 1, len(to)
+            to(i:i) = ""
+        end do
+
+
+    end subroutine copy_chars
+
+
+
+    !
     ! CLEAR
     !
-    recursive subroutine clear(b)
-        type(string), intent(inout) :: b
+    recursive subroutine string_clear(this)
+        type(string), intent(inout) :: this
 
-        if (associated(b % next)) then
-            call clear(b % next)
+        if (associated(this % next)) then
+            call string_clear(this % next)
+            deallocate(this % next)
+            nullify (this % next)
         end if
 
-        b % index = 0
-        nullify (b % next)
+        this % index = 0
 
-    end subroutine clear
+    end subroutine string_clear
 
     !
     ! SIZE    
     !
-    recursive integer function size(str) result(count)
+    recursive integer function string_length(str) result(count)
         type(string), intent(in) :: str
 
         count = str % index
 
         if (str % index == BLOCK_SIZE .AND. associated(str % next)) then
-            count = count + size(str % next)
+            count = count + string_length(str % next)
         end if
-        
-    end function size
+
+    end function string_length
 
 
+    !
+    ! GET CHAR AT
+    !
+    recursive character function get_char_at(this, i) result(c)
+        type(string), intent(in) :: this
+        integer, intent(in) :: i
+
+        if (i .LE. this % index) then
+            c = this % chars(i:i)
+        else
+            c = get_char_at(this % next, i - this % index)
+        end if
+
+    end function get_char_at
 end module string_m
