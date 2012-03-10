@@ -29,32 +29,37 @@ module fson_value_m
     ! fson value
     !
     type fson_value
-        type(fson_string), pointer :: name
+        type(fson_string), pointer :: name => null()
         integer :: value_type = TYPE_NULL
         logical :: value_logical
         integer :: value_integer
         real :: value_real
-        type(fson_string), pointer :: value_string
-        type(fson_value), pointer :: next
+        type(fson_string), pointer :: value_string => null()
+        type(fson_value), pointer :: next => null()
     end type fson_value
 
 contains
 
     !
-    ! fson value create
+    ! FSON VALUE CREATE
     !
     function fson_value_create() result(p)
         type(fson_value), pointer :: p
         type(fson_value), allocatable, target :: new
         
         allocate(new)  
-        new%next => null() 
-
-        print *, "create", associated(new%next)
-        
-        p => new
+                    
+        p => new        
         
     end function fson_value_create
+    
+    !
+    ! FSON VALUE DESTROY
+    !
+    subroutine fson_value_destroy(this)
+        type(fson_value), intent(in), pointer :: this
+        
+    end subroutine fson_value_destroy
 
     !
     ! fson value add
