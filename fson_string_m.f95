@@ -30,6 +30,18 @@ module fson_string_m
 contains
 
     !
+    ! fson string create
+    !
+    function fson_string_create() result(p)
+        type(fson_string), pointer :: p
+        type(fson_string), allocatable, target :: new
+        
+        allocate(new)
+        p => new
+        
+    end function fson_string_create
+
+    !
     ! ALLOCATE BLOCK
     !
     subroutine allocate_block(this)
