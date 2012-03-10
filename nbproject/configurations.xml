@@ -8,9 +8,9 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>fson.f95</itemPath>
-      <itemPath>fson_string_m.f95</itemPath>
-      <itemPath>fson_value_m.f95</itemPath>
+      <itemPath>src/fson.f95</itemPath>
+      <itemPath>src/fson_string_m.f95</itemPath>
+      <itemPath>src/fson_value_m.f95</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
