@@ -5,19 +5,19 @@
 ! Created on March 7, 2012, 7:40 PM
 !
 
-module string_m
+module fson_string_m
 
     private
 
-    public :: string, string_length, string_append, string_clear, string_copy
+    public :: fson_string, string_length, string_append, string_clear, string_copy
 
     integer, parameter :: BLOCK_SIZE = 5
 
-    type string
+    type fson_string
         character (len = BLOCK_SIZE) :: chars
         integer :: index = 0
-        type(string), pointer :: next => null()
-    end type string
+        type(fson_string), pointer :: next => null()
+    end type fson_string
 
     interface string_append
         module procedure append_chars, append_string
@@ -33,8 +33,8 @@ contains
     ! ALLOCATE BLOCK
     !
     subroutine allocate_block(this)
-        type(string), intent(inout) :: this
-        type(string), pointer :: new
+        type(fson_string), intent(inout) :: this
+        type(fson_string), pointer :: new
 
         if (.not.associated(this % next)) then
             allocate(new)
@@ -48,7 +48,7 @@ contains
     ! APPEND_STRING
     !
     subroutine append_string(str1, str2)
-        type(string), intent(inout) :: str1, str2
+        type(fson_string), intent(inout) :: str1, str2
         integer length, i
 
         length = string_length(str2)
@@ -64,15 +64,16 @@ contains
     ! APPEND_CHARS
     !
     subroutine append_chars(str, c)
-        type(string), intent(inout) :: str
+        type(fson_string), intent(inout) :: str
         character (len = *), intent(in) :: c
-        integer length, i
-
-        length = len_trim(c)
+        integer length, i       
+        
+        length = len(c)                            
 
         do i = 1, length
             call append_char(str, c(i:i))
-        end do
+        end do         
+            
 
     end subroutine append_chars
 
@@ -80,7 +81,7 @@ contains
     ! APPEND_CHAR
     !
     recursive subroutine append_char(str, c)
-        type(string), intent(inout) :: str
+        type(fson_string), intent(inout) :: str
         character, intent(in) :: c
 
         if (str % index .GE. BLOCK_SIZE) then
@@ -100,7 +101,7 @@ contains
     ! COPY CHARS
     !
     subroutine copy_chars(this, to)
-        type(string), intent(in) :: this
+        type(fson_string), intent(in) :: this
         character(len = *), intent(inout) :: to
         integer :: length
         
@@ -124,7 +125,7 @@ contains
     ! CLEAR
     !
     recursive subroutine string_clear(this)
-        type(string), intent(inout) :: this
+        type(fson_string), intent(inout) :: this
 
         if (associated(this % next)) then
             call string_clear(this % next)
@@ -140,7 +141,7 @@ contains
     ! SIZE    
     !
     recursive integer function string_length(str) result(count)
-        type(string), intent(in) :: str
+        type(fson_string), intent(in) :: str
 
         count = str % index
 
@@ -155,7 +156,7 @@ contains
     ! GET CHAR AT
     !
     recursive character function get_char_at(this, i) result(c)
-        type(string), intent(in) :: this
+        type(fson_string), intent(in) :: this
         integer, intent(in) :: i
 
         if (i .LE. this % index) then
@@ -165,4 +166,5 @@ contains
         end if
 
     end function get_char_at
-end module string_m
+       
+end module fson_string_m

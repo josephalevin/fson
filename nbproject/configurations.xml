@@ -9,8 +9,8 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>fson.f95</itemPath>
-      <itemPath>string_m.f95</itemPath>
-      <itemPath>value_m.f95</itemPath>
+      <itemPath>fson_string_m.f95</itemPath>
+      <itemPath>fson_value_m.f95</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -34,6 +34,7 @@
       <compileType>
         <fortranCompilerTool>
           <commandlineTool>gfortran</commandlineTool>
+          <commandLine>-J build</commandLine>
         </fortranCompilerTool>
       </compileType>
     </conf>

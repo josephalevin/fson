@@ -34,9 +34,9 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/fson_string_m.o \
 	${OBJECTDIR}/fson.o \
-	${OBJECTDIR}/string_m.o \
-	${OBJECTDIR}/value_m.o
+	${OBJECTDIR}/fson_value_m.o
 
 
 # C Compiler Flags
@@ -63,17 +63,17 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fson: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.f} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fson ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
+${OBJECTDIR}/fson_string_m.o: fson_string_m.f95 
+	${MKDIR} -p ${OBJECTDIR}
+	$(COMPILE.f) -O2 -o ${OBJECTDIR}/fson_string_m.o fson_string_m.f95
+
 ${OBJECTDIR}/fson.o: fson.f95 
 	${MKDIR} -p ${OBJECTDIR}
 	$(COMPILE.f) -O2 -o ${OBJECTDIR}/fson.o fson.f95
 
-${OBJECTDIR}/string_m.o: string_m.f95 
+${OBJECTDIR}/fson_value_m.o: fson_value_m.f95 
 	${MKDIR} -p ${OBJECTDIR}
-	$(COMPILE.f) -O2 -o ${OBJECTDIR}/string_m.o string_m.f95
-
-${OBJECTDIR}/value_m.o: value_m.f95 
-	${MKDIR} -p ${OBJECTDIR}
-	$(COMPILE.f) -O2 -o ${OBJECTDIR}/value_m.o value_m.f95
+	$(COMPILE.f) -O2 -o ${OBJECTDIR}/fson_value_m.o fson_value_m.f95
 
 # Subprojects
 .build-subprojects:
