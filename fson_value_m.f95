@@ -29,12 +29,12 @@ module fson_value_m
     ! fson value
     !
     type fson_value
-        type(fson_string) :: name
+        type(fson_string), pointer :: name
         integer :: value_type = TYPE_NULL
         logical :: value_logical
         integer :: value_integer
         real :: value_real
-        type(fson_string) :: value_string
+        type(fson_string), pointer :: value_string
         type(fson_value), pointer :: next
     end type fson_value
 

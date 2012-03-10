@@ -27,8 +27,8 @@ contains
     !
     ! fson parse file
     !
-    function fson_parse_file(file)
-        type(fson_value), pointer :: fson_parse_file
+    function fson_parse_file(file) result(p)
+        type(fson_value), pointer :: p
         integer :: unit
         character(len = *), intent(in) :: file
 
@@ -36,13 +36,13 @@ contains
         ! open the file
         open (unit = unit, file = file, status = "old", action = "read", form = "formatted", position = "rewind")
 
-        fson_parse_file => fson_value_create()
+        p => fson_value_create()
 
-        print *, "parse", associated(fson_parse_file % next)
+        print *, "parse", associated(p % next)
 
-        call parse_value(unit = unit, value = fson_parse_file)
+        call parse_value(unit = unit, value = p)
 
-        print *, "parse2", associated(fson_parse_file % next)
+        print *, "parse2", associated(p % next)
 
     end function fson_parse_file
 
@@ -51,12 +51,16 @@ contains
     !
     recursive subroutine parse_value(unit, value)
         integer, intent(inout) :: unit
-        type(fson_value), pointer, intent(inout) :: value
-
+        type(fson_value), pointer, intent(inout) :: value       
         logical :: eof
         character :: c
+                
+        
+        print *, "parse value", associated(value % next)
 
         c = pop_char(unit, eof = eof, skip_ws = .true.)
+        
+        print *, "after pop", associated(value % next)
 
         if (eof) then
         else
@@ -72,28 +76,33 @@ contains
                 call parse_array(unit, value)
                 print *, "after array", associated(value % next)
             case ('"')
-                ! string
-                value % value_type = TYPE_STRING
-                value % value_string = parse_string(unit)
-                print *, "after string", associated(value % next)
+                ! string                      
+                print *, "before string 1", associated(value % next)
+                value % value_type = TYPE_STRING                
+                value % value_string => parse_string(unit)                
             case ("t")
                 !true
                 value % value_type = TYPE_LOGICAL
                 call parse_for_chars(unit, "rue")
+                value % value_logical = .true.
             case ("f")
                 !false
                 value % value_type = TYPE_LOGICAL
+                value % value_logical = .false.
                 call parse_for_chars(unit, "alse")
             case ("n")
                 value % value_type = TYPE_NULL
-                call parse_for_chars(unit, "ull")
+                call parse_for_chars(unit, "ull")                
+            case default
+                print *, "ERROR: Unexpected character while parsing value", c
+                call exit (1)
             end select
         end if
 
     end subroutine parse_value
 
     !
-    ! parse object
+    ! PARSE OBJECT
     !    
     recursive subroutine parse_object(unit, parent)
         integer, intent(inout) :: unit
@@ -156,7 +165,7 @@ contains
     end subroutine parse_object
 
     !
-    ! parse array
+    ! PARSE ARRAY
     !    
     recursive subroutine parse_array(unit, parent)
         integer, intent(inout) :: unit
@@ -200,12 +209,12 @@ contains
     !
     function parse_string(unit) result(string)
         integer, intent(inout) :: unit
-        type(fson_string), allocatable :: string
+        type(fson_string), pointer :: string
 
         logical :: eof
         character :: c, last
 
-        allocate (string)
+        string => fson_string_create()
 
         do
             c = pop_char(unit, eof = eof, skip_ws = .false.)
@@ -249,7 +258,7 @@ contains
     !
     ! pop the next character off the stream
     !
-    character function pop_char(unit, eof, skip_ws)
+    character function pop_char(unit, eof, skip_ws) result(popped)
         integer, intent(in) :: unit
         logical, intent(out) :: eof
         logical, intent(in), optional :: skip_ws
@@ -257,16 +266,13 @@ contains
         integer :: ios
         character :: c
         logical :: ignore
-
-
-
+        
         eof = .false.
         if (.not.present(skip_ws)) then
             ignore = .false.
         else
             ignore = skip_ws
-        end if
-
+        end if        
 
         do
             read (unit = unit, fmt = "(a)", advance = "no", iostat = ios) c
@@ -278,7 +284,7 @@ contains
             else if (ignore .and. c == " ") then
                 cycle
             else
-                pop_char = c
+                popped = c
                 exit
             end if
         end do
