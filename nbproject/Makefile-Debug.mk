@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/src/fson_path_m.o \
+	${OBJECTDIR}/src/fson_example.o \
 	${OBJECTDIR}/src/fson.o \
 	${OBJECTDIR}/src/fson_string_m.o \
 	${OBJECTDIR}/src/fson_value_m.o
@@ -67,6 +68,10 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fson: ${OBJECTFILES}
 ${OBJECTDIR}/src/fson_path_m.o: src/fson_path_m.f95 
 	${MKDIR} -p ${OBJECTDIR}/src
 	$(COMPILE.f) -g -o ${OBJECTDIR}/src/fson_path_m.o src/fson_path_m.f95
+
+${OBJECTDIR}/src/fson_example.o: src/fson_example.f95 
+	${MKDIR} -p ${OBJECTDIR}/src
+	$(COMPILE.f) -g -o ${OBJECTDIR}/src/fson_example.o src/fson_example.f95
 
 ${OBJECTDIR}/src/fson.o: src/fson.f95 
 	${MKDIR} -p ${OBJECTDIR}/src

@@ -9,6 +9,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>src/fson.f95</itemPath>
+      <itemPath>src/fson_example.f95</itemPath>
       <itemPath>src/fson_path_m.f95</itemPath>
       <itemPath>src/fson_string_m.f95</itemPath>
       <itemPath>src/fson_value_m.f95</itemPath>
@@ -39,6 +40,38 @@
           <commandLine>-J build</commandLine>
         </fortranCompilerTool>
       </compileType>
+      <folder path="TestFiles/f1">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f1</output>
+        </linkerTool>
+      </folder>
+      <folder path="TestFiles/f2">
+        <cTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>.</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <output>${TESTDIR}/TestFiles/f2</output>
+        </linkerTool>
+      </folder>
     </conf>
     <conf name="Release" type="1">
       <toolsSet>

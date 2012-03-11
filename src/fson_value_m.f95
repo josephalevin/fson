@@ -45,7 +45,7 @@ module fson_value_m
 
 
     !
-    ! fson value
+    ! FSON VALUE
     !
     type fson_value
         type(fson_string), pointer :: name => null()
@@ -84,8 +84,31 @@ contains
     !
     ! FSON VALUE DESTROY
     !
-    subroutine fson_value_destroy(this)
+    recursive subroutine fson_value_destroy(this)
         type(fson_value), pointer :: this
+        
+        if(associated(this % children)) then
+            call fson_value_destroy(this % children)
+            nullify(this % children)
+        end if
+        
+        if(associated(this % next)) then
+            call fson_value_destroy(this % next)
+            nullify (this % next)
+        end if
+        
+        if(associated(this % name)) then
+            call fson_string_destroy(this % name)
+            nullify (this % name)
+        end if
+        
+        if(associated(this % value_string)) then
+            call fson_string_destroy(this % value_string)
+            nullify (this % value_string)
+        end if
+        
+        nullify(this)
+                
 
     end subroutine fson_value_destroy
 
@@ -116,7 +139,7 @@ contains
     end subroutine
 
     !
-    ! fson value count
+    ! FSON_VALUE_COUNT
     !
     integer function fson_value_count(this) result(count)
         type(fson_value), pointer :: this, p

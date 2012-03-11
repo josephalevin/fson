@@ -26,7 +26,7 @@
 !
 
 module fson
-    use fson_value_m
+    use fson_value_m, fson_print => fson_value_print, fson_destroy => fson_value_destroy
     use fson_string_m
     use fson_path_m, fson_get => fson_path_get
 
@@ -34,7 +34,7 @@ module fson
 
     private
 
-    public :: fson_parse_file, fson_value, fson_get
+    public :: fson_parse, fson_value, fson_get, fson_print, fson_destroy
 
     ! FILE IOSTAT CODES
     integer, parameter :: end_of_file = -1
@@ -53,9 +53,9 @@ module fson
 contains
 
     !
-    ! FSON PARSE FILE
+    ! FSON PARSE
     !
-    function fson_parse_file(file, unit) result(p)
+    function fson_parse(file, unit) result(p)
         type(fson_value), pointer :: p
         integer, optional, intent(inout) :: unit
         character(len = *), intent(in) :: file
@@ -90,7 +90,7 @@ contains
         ! close the file
         close (u)
 
-    end function fson_parse_file
+    end function fson_parse
 
     !
     ! PARSE_VALUE
@@ -500,44 +500,3 @@ contains
     end subroutine push_char
 
 end module fson
-
-module fson_test_m
-    implicit none
-    contains
-    
-    subroutine test_element_callback(element, index, count)
-        use fson_value_m
-        type(fson_value), pointer :: element
-        integer :: index, count
-
-        print *, index, element%value_integer
-    end subroutine test_element_callback
-    
-end module fson_test_m
-!
-! MAIN PROGRAM
-! 
-! Reads in a json file and prints the contents to stdout.
-!
-program main
-    use fson
-    use fson_value_m
-    use fson_path_m
-    use fson_test_m
-
-    implicit none
-    
-    type(fson_value), pointer :: parsed
-
-    parsed => fson_parse_file(file = "test1.json")
-
-    !    call fson_value_print(parsed)
-
-
-    call fson_get(this = parsed, path="[1]$", element_callback = test_element_callback)
-
-
-
-
-end program main
-

@@ -27,8 +27,8 @@ module fson_string_m
 
     private
 
-    public :: fson_string, fson_string_create, fson_string_length, fson_string_append, fson_string_clear, fson_string_copy
-    public :: fson_string_equals
+    public :: fson_string, fson_string_create, fson_string_destroy, fson_string_length, fson_string_append, fson_string_clear 
+    public :: fson_string_equals, fson_string_copy
 
     integer, parameter :: BLOCK_SIZE = 32
 
@@ -71,6 +71,20 @@ contains
         end if
 
     end function fson_string_create
+    
+    !
+    ! FSON STRING CREATE
+    !
+    recursive subroutine fson_string_destroy(this)
+        type(fson_string), pointer :: this
+        
+        if(associated(this % next)) then
+            call fson_string_destroy(this % next)
+        end if
+        
+        nullify (this % next)
+        nullify (this)
+    end subroutine fson_string_destroy
 
     !
     ! ALLOCATE BLOCK
