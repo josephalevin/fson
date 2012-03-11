@@ -43,13 +43,10 @@ contains
     !
     ! FSON VALUE CREATE
     !
-    function fson_value_create() result(p)
-        type(fson_value), pointer :: p
-        type(fson_value), allocatable, target :: new
+    function fson_value_create() result(new)
+        type(fson_value), pointer :: new        
         
-        allocate(new)  
-                    
-        p => new        
+        allocate(new)                                  
         
     end function fson_value_create
     
@@ -57,7 +54,7 @@ contains
     ! FSON VALUE DESTROY
     !
     subroutine fson_value_destroy(this)
-        type(fson_value), intent(in), pointer :: this
+        type(fson_value), pointer :: this
         
     end subroutine fson_value_destroy
 
@@ -65,8 +62,8 @@ contains
     ! fson value add
     !
     subroutine fson_value_add(this, member)
-        type(fson_value), pointer, intent(in) :: this
-        type(fson_value), pointer, intent(in) :: member
+        type(fson_value), pointer :: this
+        type(fson_value), pointer :: member
         type(fson_value), pointer :: p
 
         
@@ -90,7 +87,7 @@ contains
     ! fson value count
     !
     integer function fson_value_count(this) result(count)
-        type(fson_value), pointer, intent(in) :: this        
+        type(fson_value), pointer :: this        
         type(fson_value), pointer :: p
         
         p => null()
@@ -109,10 +106,10 @@ contains
     !
     ! fson value print
     !
-    subroutine fson_value_print(this, indent)
-        type(fson_value), intent(in) :: this
+    recursive subroutine fson_value_print(this, indent)
+        type(fson_value), pointer :: this
         integer, optional, intent(in) :: indent
-
+        character (len=1024) :: tmp_chars
         integer :: tab
         if (present(indent)) then
             tab = indent
@@ -124,8 +121,20 @@ contains
         case(TYPE_OBJECT)
             print *, "{"
             print *, "}"
+        case (TYPE_ARRAY)
+            print *, "["
+            print *, "]"
         case (TYPE_NULL)
-            print *, "NULL"
+            print *, "null"
+        case (TYPE_STRING)
+            call fson_string_copy(this%value_string, tmp_chars)            
+            print *, '"', trim(tmp_chars), '"'
+        case (TYPE_LOGICAL)
+            if (this % value_logical) then
+                print *, "true"
+            else
+                print *, "false"
+            end if            
         end select
     end subroutine fson_value_print
 

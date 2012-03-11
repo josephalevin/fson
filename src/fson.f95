@@ -63,7 +63,7 @@ contains
     !
     recursive subroutine parse_value(unit, value)
         integer, intent(inout) :: unit
-        type(fson_value), pointer, intent(inout) :: value       
+        type(fson_value), pointer :: value       
         logical :: eof
         character :: c
         
@@ -118,7 +118,7 @@ contains
     !    
     recursive subroutine parse_object(unit, parent)
         integer, intent(inout) :: unit
-        type(fson_value), pointer, intent(inout) :: parent
+        type(fson_value), pointer :: parent
 
         type(fson_value), pointer :: pair
 
@@ -180,7 +180,7 @@ contains
     !    
     recursive subroutine parse_array(unit, parent)
         integer, intent(inout) :: unit
-        type(fson_value), pointer, intent(inout) :: parent
+        type(fson_value), pointer :: parent
 
         type(fson_value), pointer :: element
 
@@ -319,9 +319,8 @@ program main
     type(fson_value), pointer :: parsed
 
     parsed => fson_parse_file(file = "test1.json")
-
-    print *, fson_value_count(parsed)
-    !    call fson_value_print(parsed)
+    
+    call fson_value_print(parsed)
 
 
 end program main
