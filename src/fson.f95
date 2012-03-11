@@ -534,7 +534,7 @@ program main
     !    call fson_value_print(parsed)
 
 
-    call fson_get(this = parsed, element_callback = test_element_callback)
+    call fson_get(this = parsed, path="[1]$", element_callback = test_element_callback)
 
 
 

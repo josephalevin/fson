@@ -71,8 +71,10 @@ contains
             select case (c)
                 case ("$")
                     ! root
-                    ! not yet implemented, will need parent pointers on the values                       
-                    child_i = i
+                    do while (associated (p % parent))
+                        p => p % parent
+                    end do
+                    child_i = i + 1
                 case ("@")
                     ! this                    
                     p => this

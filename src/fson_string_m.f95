@@ -57,7 +57,7 @@ module fson_string_m
 contains
 
     !
-    ! fson string create
+    ! FSON STRING CREATE
     !
     function fson_string_create(chars) result(new)
         character(len=*), optional :: chars
@@ -65,6 +65,7 @@ contains
 
         allocate(new)
         
+        ! append chars if available
         if(present(chars)) then
             call append_chars(new, chars)
         end if

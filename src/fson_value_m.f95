@@ -55,6 +55,7 @@ module fson_value_m
         real :: value_real
         type(fson_string), pointer :: value_string => null()
         type(fson_value), pointer :: next => null()
+        type(fson_value), pointer :: parent => null()
         type(fson_value), pointer :: children => null()
     end type fson_value
 
@@ -96,6 +97,10 @@ contains
         type(fson_value), pointer :: this, member, p
         character(len = 100) :: tmp
 
+        ! associate the parent
+        member % parent => this
+        
+        ! add to linked list
         if (associated(this % children)) then
             ! get to the tail of the linked list  
             p => this % children
@@ -106,7 +111,7 @@ contains
             p % next => member
         else
             this % children => member
-        end if
+        end if                
 
     end subroutine
 
