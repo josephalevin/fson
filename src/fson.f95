@@ -412,11 +412,10 @@ contains
         integer, optional, intent(inout) :: digit_count        
         logical :: eof
         character :: c
-        integer :: integral_factor, tmp, count
+        integer :: tmp, count
         
         count = 0
-        integral = 0
-        integral_factor = 1
+        integral = 0        
         do
             c = pop_char(unit, eof = eof, skip_ws = .true.)                  
             if (eof) then
@@ -428,12 +427,11 @@ contains
                         ! digit        
                         read (c, '(i1)') tmp                        
                         ! shift
-                        integral = integral * integral_factor
+                        if(count > 0) then
+                            integral = integral * 10
+                        end if
                         ! add
-                        integral = integral + tmp
-    
-                        ! increase the next shift
-                        integral_factor = integral_factor * 10   
+                        integral = integral + tmp                            
                         
                         ! increase the count
                         count = count + 1
@@ -516,19 +514,18 @@ program main
     implicit none
 
     integer :: x
+    real :: a
     
     type(fson_value), pointer :: parsed
 
     parsed => fson_parse_file(file = "test1.json")
     
 !    call fson_value_print(parsed)
-
-    call fson_get(this=parsed, path="w", value=x)
-    print *, "w=", x
     
-    call fson_get(this=parsed, path="sub.a", value=x)
     
-    print *, "a=", x
+    call fson_get(this=parsed, path="a.[3].xbv", value=x)
+    
+    print *, x
 
     
 end program main

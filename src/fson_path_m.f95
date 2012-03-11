@@ -25,7 +25,7 @@
 
 module fson_path_m
     
-    use fson_value_m
+    use fson_value_m      
 
     private
     
@@ -50,17 +50,19 @@ contains
         character(len=*), intent(inout) :: path
         integer :: i, length, child_i
         character :: c
-        
+        logical :: array        
+                
         ! default to assuming relative to this
         p => this
         
-        child_i = 1
+        child_i = 1          
+        
+        array = .false.
         
         length = len_trim(path)
         
         do i=1, length
-            c = path(i:i)
-            
+            c = path(i:i)    
             select case (c)
                 case ("$")
                     ! root
@@ -70,23 +72,37 @@ contains
                     ! this                    
                     p => this
                     child_i = i
-                case (".")
-                    ! get child member from p                    
-                    p => fson_value_get(p, path(child_i:i-1))
+                case (".")                    
+                    ! get child member from p                          
+                    if (child_i < i) then                          
+                        p => fson_value_get(p, path(child_i:i-1))
+                    else
+                        child_i = i + 1
+                        cycle
+                    end if
                     
                     if(.not.associated(p)) then
                         return                                        
                     end if
                     
                     child_i = i+1
-                case ("[")
-                    ! get child element from p
-                    child_i = i
-                case default
+                case ("[")                    
+                    ! start looking for the array element index
+                    array = .true.
+                    child_i = i + 1
+                case ("]")
+                    if (.not.array) then
+                        print *, "ERROR: Unexpected ], not missing preceding ["
+                        call exit(1)
+                    end if
+                    array = .false.
+                    child_i = parse_integer(path(child_i:i-1))                                                
+                    p => fson_value_get(p, child_i)                                                                                                                    
                     
+                    child_i= i + 1                                     
             end select            
         end do
-        
+                
         ! grab the last child if present in the path
         if (child_i <= length) then            
             p => fson_value_get(p, path(child_i:i-1))                    
@@ -98,6 +114,36 @@ contains
                 
         
     end subroutine get_by_path
+    
+    !
+    ! PARSE INTEGER
+    !
+    integer function parse_integer(chars) result(integral)
+        character(len=*) :: chars
+        character :: c
+        integer :: tmp, i
+                
+        integral = 0        
+        do i=1, len_trim(chars)
+            c = chars(i:i)            
+            select case(c)
+                case ("0":"9")
+                    ! digit        
+                    read (c, '(i1)') tmp                                               
+                    
+                    ! shift
+                    if(i > 1) then
+                        integral = integral * 10
+                    end if
+                    ! add
+                    integral = integral + tmp
+                                                    
+                case default                          
+                    return
+            end select            
+        end do
+    
+    end function parse_integer    
     
     !
     ! GET INTEGER
@@ -113,8 +159,8 @@ contains
         call get_by_path(this=this, path=path, p=p)
         
         if(.not.associated(p)) then
-            print *, "value path not found: ", trim(path)
-            return
+            print *, "Unable to resolve path: ", path
+            call exit(1)
         end if
                 
         
@@ -128,6 +174,9 @@ contains
             else
                 value = 0
             end if
+        else
+            print *, "Unable to resolve value to integer: ", path
+            call exit(1)
         end if
         
     end subroutine get_integer
