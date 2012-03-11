@@ -30,7 +30,7 @@ module fson_path_m
 
     private
     
-    public :: fson_path_get
+    public :: fson_path_get, element_callback
     
     interface fson_path_get
         module procedure get_by_path
@@ -38,6 +38,7 @@ module fson_path_m
         module procedure get_real
         module procedure get_logical
         module procedure get_chars
+        module procedure get_array
     end interface fson_path_get
 
 contains
@@ -75,7 +76,7 @@ contains
                 case ("@")
                     ! this                    
                     p => this
-                    child_i = i
+                    child_i = i + 1
                 case (".")                    
                     ! get child member from p                          
                     if (child_i < i) then                          
@@ -277,5 +278,49 @@ contains
         end if
         
     end subroutine get_chars
+    
+    !
+    ! GET ARRAY
+    !
+    
+    subroutine get_array(this, path, element_callback)
+        type(fson_value), pointer :: this, p, element
+        character(len=*) :: path   
+        integer :: index, count
+        
+        ! ELEMENT CALLBACK
+        interface
+            subroutine element_callback(element, index, count)
+                use fson_value_m
+                type(fson_value), pointer :: element
+                integer :: index, count
+            end subroutine element_callback
+        end interface
+        
+        
+        nullify(p)                
+        
+        ! resolve the path to the value
+        call get_by_path(this=this, path=path, p=p)
+            
+        if(.not.associated(p)) then
+            print *, "Unable to resolve path: ", path
+            call exit(1)
+        end if
+                
+        
+        if(p % value_type == TYPE_ARRAY) then            
+            count = fson_value_count(p)
+            do index=1, count
+                element => fson_value_get(p, index)
+                call element_callback(element, index, count)
+            end do
+        else
+            print *, "Resolved value is not an array. ", path
+            call exit(1)
+        end if
+        
+    end subroutine get_array
+    
 
 end module fson_path_m
