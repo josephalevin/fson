@@ -34,6 +34,8 @@ module fson_path_m
     interface fson_path_get
         module procedure get_by_path
         module procedure get_integer
+        module procedure get_real
+        module procedure get_logical
     end interface fson_path_get
 
 contains
@@ -66,7 +68,7 @@ contains
             select case (c)
                 case ("$")
                     ! root
-                    ! not yet implemented, will need parent pointers on the values   
+                    ! not yet implemented, will need parent pointers on the values                       
                     child_i = i
                 case ("@")
                     ! this                    
@@ -180,6 +182,73 @@ contains
         end if
         
     end subroutine get_integer
+    
+    !
+    ! GET INTEGER
+    !
+    subroutine get_real(this, path, value)
+        type(fson_value), pointer :: this, p
+        character(len=*) :: path
+        real :: value        
+        
+        
+        nullify(p)                
+        
+        call get_by_path(this=this, path=path, p=p)
+        
+        if(.not.associated(p)) then
+            print *, "Unable to resolve path: ", path
+            call exit(1)
+        end if
+                
+        
+        if(p % value_type == TYPE_INTEGER) then            
+            value = p % value_integer
+        else if (p % value_type == TYPE_REAL) then
+            value = p % value_real
+        else if (p % value_type == TYPE_LOGICAL) then
+            if (p % value_logical) then
+                value = 1
+            else
+                value = 0
+            end if
+        else
+            print *, "Unable to resolve value to real: ", path
+            call exit(1)
+        end if
+        
+    end subroutine get_real
+    
+    
+    !
+    ! GET INTEGER
+    !
+    subroutine get_logical(this, path, value)
+        type(fson_value), pointer :: this, p
+        character(len=*) :: path
+        logical :: value        
+        
+        
+        nullify(p)                
+        
+        call get_by_path(this=this, path=path, p=p)
+        
+        if(.not.associated(p)) then
+            print *, "Unable to resolve path: ", path
+            call exit(1)
+        end if
+                
+        
+        if(p % value_type == TYPE_INTEGER) then            
+            value = (p % value_integer > 0)       
+        else if (p % value_type == TYPE_LOGICAL) then
+            value = p % value_logical
+        else
+            print *, "Unable to resolve value to real: ", path
+            call exit(1)
+        end if
+        
+    end subroutine get_logical
     
 
 end module fson_path_m
