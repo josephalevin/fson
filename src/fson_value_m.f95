@@ -57,7 +57,7 @@ module fson_value_m
         type(fson_value), pointer :: next => null()
         type(fson_value), pointer :: children => null()
     end type fson_value
-    
+
     !
     ! FSON VALUE GET
     !
@@ -72,18 +72,18 @@ contains
     ! FSON VALUE CREATE
     !
     function fson_value_create() result(new)
-        type(fson_value), pointer :: new        
-        
-        allocate(new)                                  
-        
+        type(fson_value), pointer :: new
+
+        allocate(new)
+
     end function fson_value_create
-    
+
     !
     ! FSON VALUE DESTROY
     !
     subroutine fson_value_destroy(this)
         type(fson_value), pointer :: this
-        
+
     end subroutine fson_value_destroy
 
     !
@@ -92,50 +92,50 @@ contains
     ! Adds the memeber to the linked list
     subroutine fson_value_add(this, member)
         type(fson_value), pointer :: this, member, p
-        character(len=100) :: tmp
-                              
-        if(associated(this%children)) then
+        character(len = 100) :: tmp
+
+        if (associated(this % children)) then
             ! get to the tail of the linked list  
-            p => this%children
-            do while (associated(p%next))            
-                p => p%next
+            p => this % children
+            do while (associated(p % next))
+                p => p % next
             end do
 
-            p%next => member 
+            p % next => member
         else
-            this%children => member
+            this % children => member
         end if
-               
+
     end subroutine
 
     !
     ! fson value count
     !
     integer function fson_value_count(this) result(count)
-        type(fson_value), pointer :: this, p        
-                
+        type(fson_value), pointer :: this, p
+
         count = 0
-        
-        p => this%children               
-        
-        do while (associated(p))            
-            count = count + 1                     
-            p => p%next
-        end do                
-        
+
+        p => this % children
+
+        do while (associated(p))
+            count = count + 1
+            p => p % next
+        end do
+
     end function
-    
+
     function get_by_index(this, index) result(p)
         type(fson_value), pointer :: this, p
         integer, intent(in) :: index
         integer :: i
-        
-        p => this%children
-        
+
+        p => this % children
+
         do i = 1, index - 1
-            p => p%next            
+            p => p % next
         end do
-        
+
     end function get_by_index
 
     !
@@ -144,7 +144,7 @@ contains
     recursive subroutine fson_value_print(this, indent)
         type(fson_value), pointer :: this, element
         integer, optional, intent(in) :: indent
-        character (len=1024) :: tmp_chars
+        character (len = 1024) :: tmp_chars
         integer :: tab, i, count
         if (present(indent)) then
             tab = indent
@@ -155,52 +155,52 @@ contains
         select case (this % value_type)
         case(TYPE_OBJECT)
             print *, "{"
-            count = fson_value_count(this)            
-            do i=1, count                
+            count = fson_value_count(this)
+            do i = 1, count
                 ! get the element
-                element => fson_value_get(this, i)                     
+                element => fson_value_get(this, i)
                 ! get the name
-                call fson_string_copy(element%name, tmp_chars)
+                call fson_string_copy(element % name, tmp_chars)
                 ! print the name
                 print *, '"', trim(tmp_chars), '":'
                 ! recursive print of the element
                 call fson_value_print(element)
                 ! print the separator if required
-                if( i < count) then
-                    print *,  ","
+                if (i < count) then
+                    print *, ","
                 end if
             end do
-            
+
             print *, "}"
         case (TYPE_ARRAY)
             print *, "["
-            count = fson_value_count(this)            
-            do i=1, count
+            count = fson_value_count(this)
+            do i = 1, count
                 ! get the element
-                element => fson_value_get(this, i)                                                                
+                element => fson_value_get(this, i)
                 ! recursive print of the element
                 call fson_value_print(element)
                 ! print the separator if required
-                if( i < count) then
-                    print *,  ","
+                if (i < count) then
+                    print *, ","
                 end if
             end do
             print *, "]"
-        case (TYPE_NULL)            
+        case (TYPE_NULL)
             print *, "null"
         case (TYPE_STRING)
-            call fson_string_copy(this%value_string, tmp_chars)            
+            call fson_string_copy(this % value_string, tmp_chars)
             print *, '"', trim(tmp_chars), '"'
         case (TYPE_LOGICAL)
             if (this % value_logical) then
                 print *, "true"
             else
                 print *, "false"
-            end if   
+            end if
         case (TYPE_INTEGER)
-            print *, this%value_integer
+            print *, this % value_integer
         case (TYPE_REAL)
-            print *, this%value_real
+            print *, this % value_real
         end select
     end subroutine fson_value_print
 
