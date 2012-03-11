@@ -155,13 +155,16 @@ contains
     !
     subroutine get_integer(this, path, value)
         type(fson_value), pointer :: this, p
-        character(len=*) :: path
+        character(len=*), optional :: path
         integer :: value        
         
         
         nullify(p)                
-        
-        call get_by_path(this=this, path=path, p=p)
+        if(present(path)) then
+            call get_by_path(this=this, path=path, p=p)
+        else
+            p => this
+        end if
         
         if(.not.associated(p)) then
             print *, "Unable to resolve path: ", path
@@ -191,13 +194,17 @@ contains
     !
     subroutine get_real(this, path, value)
         type(fson_value), pointer :: this, p
-        character(len=*) :: path
+        character(len=*), optional :: path
         real :: value        
         
         
         nullify(p)                
         
-        call get_by_path(this=this, path=path, p=p)
+        if(present(path)) then
+            call get_by_path(this=this, path=path, p=p)
+        else
+            p => this
+        end if
         
         if(.not.associated(p)) then
             print *, "Unable to resolve path: ", path
@@ -228,13 +235,17 @@ contains
     !
     subroutine get_logical(this, path, value)
         type(fson_value), pointer :: this, p
-        character(len=*) :: path
+        character(len=*), optional :: path
         logical :: value        
         
         
         nullify(p)                
         
-        call get_by_path(this=this, path=path, p=p)
+        if(present(path)) then
+            call get_by_path(this=this, path=path, p=p)
+        else
+            p => this
+        end if
         
         if(.not.associated(p)) then
             print *, "Unable to resolve path: ", path
@@ -258,11 +269,16 @@ contains
     !
     subroutine get_chars(this, path, value)
         type(fson_value), pointer :: this, p
-        character(len=*) :: path, value                
+        character(len=*), optional :: path
+        character(len=*) :: value  
         
         nullify(p)                
         
-        call get_by_path(this=this, path=path, p=p)
+        if(present(path)) then
+            call get_by_path(this=this, path=path, p=p)
+        else
+            p => this
+        end if
         
         if(.not.associated(p)) then
             print *, "Unable to resolve path: ", path
@@ -285,7 +301,7 @@ contains
     
     subroutine get_array(this, path, element_callback)
         type(fson_value), pointer :: this, p, element
-        character(len=*) :: path   
+        character(len=*), optional :: path   
         integer :: index, count
         
         ! ELEMENT CALLBACK
@@ -301,7 +317,11 @@ contains
         nullify(p)                
         
         ! resolve the path to the value
-        call get_by_path(this=this, path=path, p=p)
+        if(present(path)) then
+            call get_by_path(this=this, path=path, p=p)
+        else
+            p => this
+        end if
             
         if(.not.associated(p)) then
             print *, "Unable to resolve path: ", path
