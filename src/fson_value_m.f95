@@ -37,6 +37,7 @@ module fson_value_m
         real :: value_real
         type(fson_string), pointer :: value_string => null()
         type(fson_value), pointer :: next => null()
+        type(fson_value), pointer :: children => null()
     end type fson_value
     
     !
@@ -73,17 +74,19 @@ contains
     ! Adds the memeber to the linked list
     subroutine fson_value_add(this, member)
         type(fson_value), pointer :: this, member, p
+        character(len=100) :: tmp
+                              
+        if(associated(this%children)) then
+            ! get to the tail of the linked list  
+            p => this%children
+            do while (associated(p%next))            
+                p => p%next
+            end do
 
-        ! get to the tail of the linked list                       
-        p => this        
-        
-        do while (associated(p%next))            
-            p => p%next
-        end do
-        
-        p%next => member 
-        
-        nullify(member%next)
+            p%next => member 
+        else
+            this%children => member
+        end if
                
     end subroutine
 
@@ -95,7 +98,7 @@ contains
                 
         count = 0
         
-        p => this%next               
+        p => this%children               
         
         do while (associated(p))            
             count = count + 1                     
@@ -109,9 +112,9 @@ contains
         integer, intent(in) :: index
         integer :: i
         
-        p => this
+        p => this%children
         
-        do i = 1, index
+        do i = 1, index - 1
             p => p%next            
         end do
         

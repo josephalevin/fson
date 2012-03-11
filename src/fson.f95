@@ -82,7 +82,7 @@ contains
         else
             select case (c)
             case ("{")
-                ! start object
+                ! start object                
                 value % value_type = TYPE_OBJECT
                 call parse_object(unit, value)                
             case ("[")
@@ -106,7 +106,7 @@ contains
                 value % value_type = TYPE_LOGICAL
                 value % value_logical = .false.
                 call parse_for_chars(unit, "alse")
-            case ("n")                
+            case ("n")                                
                 value % value_type = TYPE_NULL
                 call parse_for_chars(unit, "ull")                
             case default
@@ -123,7 +123,8 @@ contains
     recursive subroutine parse_object(unit, parent)
         integer, intent(inout) :: unit
         type(fson_value), pointer :: parent, pair       
-
+        
+        
         logical :: eof
         character :: c
 
@@ -149,8 +150,8 @@ contains
             print *, "ERROR: Unexpected end of file while parsing object member."
             call exit (1)
         else if (":" == c) then
-            ! parse the value            
-            call parse_value(unit, pair)
+            ! parse the value                       
+            call parse_value(unit, pair)          
             call fson_value_add(parent, pair)
         else
             print *, "ERROR: Expecting : and then a value. ", c
