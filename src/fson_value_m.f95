@@ -196,7 +196,9 @@ contains
                 print *, "true"
             else
                 print *, "false"
-            end if            
+            end if   
+        case (TYPE_INTEGER)
+            print *, this%value_integer
         end select
     end subroutine fson_value_print
 
