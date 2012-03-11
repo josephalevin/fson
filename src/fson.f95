@@ -136,7 +136,7 @@ contains
             call exit (1)
         else if ('"' == c) then
             pair => fson_value_create()
-            pair % name = parse_string(unit)            
+            pair % name => parse_string(unit)            
         else
             print *, "ERROR: Expecting string: '", c, "'"
             call exit (1)
