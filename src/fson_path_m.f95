@@ -25,7 +25,8 @@
 
 module fson_path_m
     
-    use fson_value_m      
+    use fson_value_m 
+    use fson_string_m
 
     private
     
@@ -36,6 +37,7 @@ module fson_path_m
         module procedure get_integer
         module procedure get_real
         module procedure get_logical
+        module procedure get_chars
     end interface fson_path_get
 
 contains
@@ -184,7 +186,7 @@ contains
     end subroutine get_integer
     
     !
-    ! GET INTEGER
+    ! GET REAL
     !
     subroutine get_real(this, path, value)
         type(fson_value), pointer :: this, p
@@ -221,7 +223,7 @@ contains
     
     
     !
-    ! GET INTEGER
+    ! GET LOGICAL
     !
     subroutine get_logical(this, path, value)
         type(fson_value), pointer :: this, p
@@ -250,5 +252,30 @@ contains
         
     end subroutine get_logical
     
+    !
+    ! GET CHARS
+    !
+    subroutine get_chars(this, path, value)
+        type(fson_value), pointer :: this, p
+        character(len=*) :: path, value                
+        
+        nullify(p)                
+        
+        call get_by_path(this=this, path=path, p=p)
+        
+        if(.not.associated(p)) then
+            print *, "Unable to resolve path: ", path
+            call exit(1)
+        end if
+                
+        
+        if(p % value_type == TYPE_STRING) then            
+            call fson_string_copy(p % value_string, value)          
+        else
+            print *, "Unable to resolve value to characters: ", path
+            call exit(1)
+        end if
+        
+    end subroutine get_chars
 
 end module fson_path_m
