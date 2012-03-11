@@ -29,7 +29,7 @@ module fson_string_m
 
     public :: fson_string, fson_string_create, string_length, string_append, string_clear, fson_string_copy
 
-    integer, parameter :: BLOCK_SIZE = 5
+    integer, parameter :: BLOCK_SIZE = 32
 
     type fson_string
         character (len = BLOCK_SIZE) :: chars
