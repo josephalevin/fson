@@ -169,7 +169,7 @@ contains
         ! pair name
         c = pop_char(unit, eof = eof, skip_ws = .true.)
         if (eof) then
-            print *, "ERROR: Unexpected end of file while parsing object member."
+            print *, "ERROR: Unexpected end of file while parsing start of object."
             call exit (1)
         else if ("}" == c) then
             ! end of an empty object
@@ -185,7 +185,7 @@ contains
         ! pair value
         c = pop_char(unit, eof = eof, skip_ws = .true.)
         if (eof) then
-            print *, "ERROR: Unexpected end of file while parsing object member."
+            print *, "ERROR: Unexpected end of file while parsing object member. 1"
             call exit (1)
         else if (":" == c) then
             ! parse the value                       
@@ -199,8 +199,7 @@ contains
         ! another possible pair
         c = pop_char(unit, eof = eof, skip_ws = .true.)        
         if (eof) then
-            print *, "ERROR: Unexpected end of file while parsing object member."
-            call exit (1)
+            return            
         else if ("," == c) then
             ! read the next member            
             call parse_object(unit = unit, parent = parent)            
@@ -311,8 +310,7 @@ contains
         integer :: integral, exp, digit_count
         real :: frac
                         
-        
-        print *, "start number"
+                
         ! first character is either - or a digit        
         c = pop_char(unit, eof = eof, skip_ws = .true.)
         if (eof) then

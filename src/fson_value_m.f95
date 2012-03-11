@@ -145,16 +145,19 @@ contains
         type(fson_value), pointer :: this, element
         integer, optional, intent(in) :: indent
         character (len = 1024) :: tmp_chars
-        integer :: tab, i, count
+        integer :: tab, i, count, spaces
+                
         if (present(indent)) then
             tab = indent
         else
             tab = 0
         end if
+        
+        spaces = tab * 2
 
         select case (this % value_type)
         case(TYPE_OBJECT)
-            print *, "{"
+            print *, repeat(" ", spaces), "{"
             count = fson_value_count(this)
             do i = 1, count
                 ! get the element
@@ -162,57 +165,47 @@ contains
                 ! get the name
                 call fson_string_copy(element % name, tmp_chars)
                 ! print the name
-                print *, '"', trim(tmp_chars), '":'
+                print *, repeat(" ", spaces), '"', trim(tmp_chars), '":'
                 ! recursive print of the element
-                call fson_value_print(element)
+                call fson_value_print(element, tab + 1)
                 ! print the separator if required
                 if (i < count) then
-                    print *, ","
+                    print *, repeat(" ", spaces), ","
                 end if
             end do
 
-            print *, "}"
+            print *, repeat(" ", spaces), "}"
         case (TYPE_ARRAY)
-            print *, "["
+            print *, repeat(" ", spaces), "["
             count = fson_value_count(this)
             do i = 1, count
                 ! get the element
                 element => fson_value_get(this, i)
                 ! recursive print of the element
-                call fson_value_print(element)
+                call fson_value_print(element, tab + 1)
                 ! print the separator if required
                 if (i < count) then
                     print *, ","
                 end if
             end do
-            print *, "]"
+            print *, repeat(" ", spaces), "]"
         case (TYPE_NULL)
-            print *, "null"
+            print *, repeat(" ", spaces), "null"
         case (TYPE_STRING)
             call fson_string_copy(this % value_string, tmp_chars)
-            print *, '"', trim(tmp_chars), '"'
+            print *, repeat(" ", spaces), '"', trim(tmp_chars), '"'
         case (TYPE_LOGICAL)
             if (this % value_logical) then
-                print *, "true"
+                print *, repeat(" ", spaces), "true"
             else
-                print *, "false"
+                print *, repeat(" ", spaces), "false"
             end if
         case (TYPE_INTEGER)
-            print *, this % value_integer
+            print *, repeat(" ", spaces), this % value_integer
         case (TYPE_REAL)
-            print *, this % value_real
+            print *, repeat(" ", spaces), this % value_real
         end select
     end subroutine fson_value_print
-
-    !
-    ! tabs
-    !
-    function tabs(n) result(chars)
-        integer, intent(in) :: n
-        character(len = 100) :: chars
-
-        chars = repeat(" ", n)
-
-    end function tabs
+    
 
 end module fson_value_m

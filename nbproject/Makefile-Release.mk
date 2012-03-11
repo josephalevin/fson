@@ -34,6 +34,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/src/fson_path_m.o \
 	${OBJECTDIR}/src/fson.o \
 	${OBJECTDIR}/src/fson_string_m.o \
 	${OBJECTDIR}/src/fson_value_m.o
@@ -62,6 +63,10 @@ LDLIBSOPTIONS=
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fson: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.f} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fson ${OBJECTFILES} ${LDLIBSOPTIONS} 
+
+${OBJECTDIR}/src/fson_path_m.o: src/fson_path_m.f95 
+	${MKDIR} -p ${OBJECTDIR}/src
+	$(COMPILE.f) -O2 -o ${OBJECTDIR}/src/fson_path_m.o src/fson_path_m.f95
 
 ${OBJECTDIR}/src/fson.o: src/fson.f95 
 	${MKDIR} -p ${OBJECTDIR}/src

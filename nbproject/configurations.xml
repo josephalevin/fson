@@ -9,6 +9,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>src/fson.f95</itemPath>
+      <itemPath>src/fson_path_m.f95</itemPath>
       <itemPath>src/fson_string_m.f95</itemPath>
       <itemPath>src/fson_value_m.f95</itemPath>
     </logicalFolder>
