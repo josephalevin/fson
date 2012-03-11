@@ -28,12 +28,13 @@
 module fson
     use fson_value_m
     use fson_string_m
+    use fson_path_m, fson_get => fson_path_get
 
     implicit none
     
     private
     
-    public :: fson_parse_file, fson_value
+    public :: fson_parse_file, fson_value, fson_get
 
     ! FILE IOSTAT CODES
     integer, parameter :: end_of_file = -1
@@ -269,7 +270,7 @@ contains
                 exit
             else
                 last = c
-                call string_append(string, c)
+                call fson_string_append(string, c)
             end if
         end do
     end function parse_string
@@ -510,14 +511,25 @@ end module fson
 program main
     use fson
     use fson_value_m
+    use fson_path_m
+    
     implicit none
 
+    integer :: x
+    
     type(fson_value), pointer :: parsed
 
     parsed => fson_parse_file(file = "test1.json")
     
-    call fson_value_print(parsed)
+!    call fson_value_print(parsed)
 
+    call fson_get(this=parsed, path="w", value=x)
+    print *, "w=", x
+    
+    call fson_get(this=parsed, path="sub.a", value=x)
+    
+    print *, "a=", x
 
+    
 end program main
 

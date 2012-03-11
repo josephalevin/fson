@@ -64,6 +64,8 @@ module fson_value_m
     ! Use either a 1 based index or member name to get the value.
     interface fson_value_get
         module procedure get_by_index
+        module procedure get_by_name_chars
+        module procedure get_by_name_string
     end interface fson_value_get
 
 contains
@@ -125,6 +127,9 @@ contains
 
     end function
 
+    !
+    ! GET BY INDEX
+    !
     function get_by_index(this, index) result(p)
         type(fson_value), pointer :: this, p
         integer, intent(in) :: index
@@ -138,6 +143,48 @@ contains
 
     end function get_by_index
 
+    !
+    ! GET BY NAME CHARS
+    !
+    function get_by_name_chars(this, name) result(p)
+        type(fson_value), pointer :: this, p
+        character(len=*), intent(in) :: name
+        
+        type(fson_string), pointer :: string
+        
+        ! convert the char array into a string
+        string => fson_string_create(name)
+        
+        p => get_by_name_string(this, string)
+        
+    end function get_by_name_chars
+    
+    !
+    ! GET BY NAME STRING
+    !
+    function get_by_name_string(this, name) result(p)
+        type(fson_value), pointer :: this, p
+        type(fson_string), pointer :: name
+        integer :: i                
+        
+        if(this % value_type .ne. TYPE_OBJECT) then
+            nullify(p)
+            return 
+        end if
+        
+        do i=1, fson_value_count(this)
+            p => fson_value_get(this, i)
+            if (fson_string_equals(p%name, name)) then                
+                return
+            end if
+        end do
+        
+        ! didn't find anything
+        nullify(p)
+        
+        
+    end function get_by_name_string
+    
     !
     ! FSON VALUE PRINT
     !

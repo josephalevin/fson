@@ -27,7 +27,8 @@ module fson_string_m
 
     private
 
-    public :: fson_string, fson_string_create, string_length, string_append, string_clear, fson_string_copy
+    public :: fson_string, fson_string_create, fson_string_length, fson_string_append, fson_string_clear, fson_string_copy
+    public :: fson_string_equals
 
     integer, parameter :: BLOCK_SIZE = 32
 
@@ -37,24 +38,37 @@ module fson_string_m
         type(fson_string), pointer :: next => null()
     end type fson_string
 
-    interface string_append
+    interface fson_string_append
         module procedure append_chars, append_string
-    end interface string_append
+    end interface fson_string_append
 
     interface fson_string_copy
         module procedure copy_chars
     end interface fson_string_copy
+
+    interface fson_string_equals
+        module procedure equals_string
+    end interface fson_string_equals
+    
+    interface fson_string_length
+        module procedure string_length
+    end interface fson_string_length
 
 contains
 
     !
     ! fson string create
     !
-    function fson_string_create() result(new)
+    function fson_string_create(chars) result(new)
+        character(len=*), optional :: chars
         type(fson_string), pointer :: new
-        
+
         allocate(new)
         
+        if(present(chars)) then
+            call append_chars(new, chars)
+        end if
+
     end function fson_string_create
 
     !
@@ -76,7 +90,7 @@ contains
     ! APPEND_STRING
     !
     subroutine append_string(str1, str2)
-        type(fson_string),pointer :: str1, str2
+        type(fson_string), pointer :: str1, str2
         integer length, i
 
         length = string_length(str2)
@@ -94,14 +108,14 @@ contains
     subroutine append_chars(str, c)
         type(fson_string), pointer :: str
         character (len = *), intent(in) :: c
-        integer length, i       
-        
-        length = len(c)                            
+        integer length, i
+
+        length = len(c)
 
         do i = 1, length
             call append_char(str, c(i:i))
-        end do         
-            
+        end do
+
 
     end subroutine append_chars
 
@@ -132,13 +146,13 @@ contains
         type(fson_string), pointer :: this
         character(len = *), intent(inout) :: to
         integer :: length
-        
+
         length = min(string_length(this), len(to))
-        
+
         do i = 1, length
             to(i:i) = get_char_at(this, i)
         end do
-        
+
         ! pad with nothing
         do i = length + 1, len(to)
             to(i:i) = ""
@@ -194,5 +208,32 @@ contains
         end if
 
     end function get_char_at
-       
+
+    !
+    ! EQUALS STRING
+    !
+    logical function equals_string(this, other) result(equals)
+        type(fson_string), pointer :: this, other
+        integer :: i
+        equals = .false.
+        
+        if(fson_string_length(this) .ne. fson_string_length(other)) then
+            equals = .false.
+            return
+        else if(fson_string_length(this) == 0) then
+            equals = .true.
+            return
+        end if
+        
+        do i=1, fson_string_length(this)
+            if(get_char_at(this, i) .ne. get_char_at(other, i)) then
+                equals = .false.
+                return
+            end if
+        end do
+        
+        equals = .true.
+        
+    end function equals_string
+
 end module fson_string_m
