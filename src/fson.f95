@@ -50,28 +50,40 @@ contains
     !
     ! FSON PARSE FILE
     !
-    function fson_parse_file(file) result(p)
+    function fson_parse_file(file, unit) result(p)
         type(fson_value), pointer :: p
-        integer :: unit
+        integer, optional , intent(inout):: unit
         character(len = *), intent(in) :: file
-        
+        logical :: unit_available
+        integer :: u
         ! init the pointer to null
         nullify(p)
 
         ! select the file unit to use
-        unit = 42
+        if(present(unit)) then
+            u = unit
+        else
+            ! find the first available unit
+            unit_available = .false.
+            u = 20
+            
+            do while(.not.unit_available)
+                inquire(unit=u, exist=unit_available)
+                u = u + 1
+            end do                                    
+        end if
         
         ! open the file
-        open (unit = unit, file = file, status = "old", action = "read", form = "formatted", position = "rewind")
+        open (unit = u, file = file, status = "old", action = "read", form = "formatted", position = "rewind")
         
         ! create the value and associate the pointer        
         p => fson_value_create()
         
         ! parse as a value
-        call parse_value(unit = unit, value = p)
+        call parse_value(unit = u, value = p)
         
         ! close the file
-        close (unit)
+        close (u)
 
     end function fson_parse_file
 
