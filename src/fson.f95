@@ -25,8 +25,7 @@ module fson
     integer, parameter :: STATE_LOOKING_FOR_VALUE = 1
     integer, parameter :: STATE_IN_OBJECT = 2
     integer, parameter :: STATE_IN_PAIR_NAME = 3
-    integer, parameter :: STATE_IN_PAIR_VALUE = 4
-
+    integer, parameter :: STATE_IN_PAIR_VALUE = 4  
 
 contains
 
@@ -68,7 +67,9 @@ contains
         character :: c
         
         ! for some unknown reason the next pointer is getting messed with the pop
-        type(fson_value), pointer :: hack                    
+        type(fson_value), pointer :: hack          
+        
+        ! start the hack                  
         hack=> value%next
                 
         ! pop the next non whitespace character off the file
@@ -87,7 +88,10 @@ contains
             case ("[")
                 ! start array
                 value % value_type = TYPE_ARRAY
-                call parse_array(unit, value)                
+                call parse_array(unit, value)     
+            case ("]")
+                ! end an empty array
+                nullify(value)
             case ('"')
                 ! string                                      
                 value % value_type = TYPE_STRING                
@@ -102,7 +106,7 @@ contains
                 value % value_type = TYPE_LOGICAL
                 value % value_logical = .false.
                 call parse_for_chars(unit, "alse")
-            case ("n")
+            case ("n")                
                 value % value_type = TYPE_NULL
                 call parse_for_chars(unit, "ull")                
             case default
@@ -118,25 +122,22 @@ contains
     !    
     recursive subroutine parse_object(unit, parent)
         integer, intent(inout) :: unit
-        type(fson_value), pointer :: parent
-
-        type(fson_value), pointer :: pair
+        type(fson_value), pointer :: parent, pair       
 
         logical :: eof
         character :: c
-
-        if (.not.associated(parent)) then
-            parent => fson_value_create()
-        end if
 
         ! pair name
         c = pop_char(unit, eof = eof, skip_ws = .true.)
         if (eof) then
             print *, "ERROR: Unexpected end of file while parsing object member."
             call exit (1)
+        else if ("}" == c) then
+            ! end of an empty object
+            return
         else if ('"' == c) then
-            pair => fson_value_create()
-            pair % name => parse_string(unit)            
+            pair => fson_value_create()            
+            pair % name => parse_string(unit)              
         else
             print *, "ERROR: Expecting string: '", c, "'"
             call exit (1)
@@ -149,21 +150,22 @@ contains
             call exit (1)
         else if (":" == c) then
             ! parse the value            
-            call parse_value(unit, pair)            
+            call parse_value(unit, pair)
+            call fson_value_add(parent, pair)
         else
-            print *, "ERROR: Expecting :", c
+            print *, "ERROR: Expecting : and then a value. ", c
             call exit (1)
         end if
 
         ! another possible pair
-        c = pop_char(unit, eof = eof, skip_ws = .true.)
+        c = pop_char(unit, eof = eof, skip_ws = .true.)        
         if (eof) then
             print *, "ERROR: Unexpected end of file while parsing object member."
             call exit (1)
         else if ("," == c) then
-            ! read the next member
+            ! read the next member            
             call parse_object(unit = unit, parent = parent)            
-        else if ("}" == c) then
+        else if ("}" == c) then            
             return
         else
             print *, "ERROR: Expecting end of object.", c
@@ -175,24 +177,21 @@ contains
     !
     ! PARSE ARRAY
     !    
-    recursive subroutine parse_array(unit, parent)
+    recursive subroutine parse_array(unit, array)
         integer, intent(inout) :: unit
-        type(fson_value), pointer :: parent
-
-        type(fson_value), pointer :: element
+        type(fson_value), pointer :: array, element
 
         logical :: eof
         character :: c
 
-        if (.not.associated(parent)) then
-            parent => fson_value_create()
-        end if
-
 
         ! try to parse an element value
+        element => fson_value_create()        
         call parse_value(unit, element)
-        if (associated(element)) then
-            call fson_value_add(parent, element)
+        
+        ! parse value will disassociate an empty array value
+        if(associated(element)) then        
+            call fson_value_add(array, element)
         end if
 
 
@@ -200,11 +199,10 @@ contains
         c = pop_char(unit, eof = eof, skip_ws = .true.)
 
         if (eof) then
-            print *, "ERROR: Unexpected end of file while parsing array."
-            call exit (1)
+            return
         else if ("," == c) then
             ! parse the next element
-            call parse_array(unit, parent)
+            call parse_array(unit, array)
         else if ("]" == c) then
             ! end of array
             return
