@@ -148,10 +148,8 @@ contains
             print *, "ERROR: Unexpected end of file while parsing object member."
             call exit (1)
         else if (":" == c) then
-            ! parse the value
-            print *, "parse value"
-            call parse_value(unit, pair)
-            print *, "after value", associated(pair % next)
+            ! parse the value            
+            call parse_value(unit, pair)            
         else
             print *, "ERROR: Expecting :", c
             call exit (1)
@@ -164,8 +162,7 @@ contains
             call exit (1)
         else if ("," == c) then
             ! read the next member
-            call parse_object(unit = unit, parent = parent)
-            print *, "after object", associated(pair % next)
+            call parse_object(unit = unit, parent = parent)            
         else if ("}" == c) then
             return
         else
