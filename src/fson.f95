@@ -306,10 +306,10 @@ contains
     subroutine parse_number(unit, value)
         integer, intent(inout) :: unit
         type(fson_value), pointer :: value
-        logical :: eof, negative, fraction, exponent
+        logical :: eof, negative, decimal, scientific
         character :: c
-        integer :: integral, frac, exp
-        real :: fractional
+        integer :: integral, exp, digit_count
+        real :: frac
                         
         
         print *, "start number"
@@ -327,14 +327,10 @@ contains
         
         
         ! parse the integral
-        integral = parse_integer(unit)
-        ! apply negative
-        if(negative) then
-            integral = integral * (-1)
-        end if
+        integral = parse_integer(unit)        
         
-        fraction = .false.
-        exponent = .false.
+        decimal = .false.
+        scientific = .false.
         
         do
             ! first character is either - or a digit        
@@ -346,40 +342,54 @@ contains
                 select case (c)
                     case (".")
                         ! this is already fractional number
-                        if(fraction) then
+                        if(decimal) then
                             ! already found a decimal place
                             print *, "ERROR: Unexpected second decimal place while parsing number."
                             call exit(1)
                         end if
-                        fraction = .true.
-                        frac = parse_integer(unit)
-
+                        decimal = .true.                        
+                        frac = parse_integer(unit, digit_count)                        
+                        frac = frac / (10 ** digit_count)                        
                     case ("e", "E")
                         ! this is already an exponent number
-                        if(exponent) then
+                        if(scientific) then
                             ! already found a e place
                             print *, "ERROR: Unexpected second exponent while parsing number."
                             call exit(1)
                         end if
-                        exponent = .true.
+                        scientific = .true.
                         ! this number has an exponent
                         exp = parse_integer(unit)
 
                     case default
                         ! this is a integer
-                        if(fraction) then
+                        if(decimal) then
                             
-                            if(exponent) then
+                            ! add the integral
+                            frac = frac + integral
+                            
+                            if(scientific) then
                                 ! apply exponent
-                                fractional = fractional * (10 ** exp)
+                                frac = frac * (10 ** exp)
                             end if
                             
+                            ! apply negative
+                            if(negative) then
+                                frac = frac * (-1)
+                            end if
+                                                        
+                            
                             value % value_type = TYPE_REAL
-                            value % value_integer = fractional
+                            value % value_real = frac
                         else
-                            if(exponent) then
+                            if(scientific) then
                                 ! apply exponent
                                 integral = integral * (10 ** exp)
+                            end if
+                            
+                            ! apply negative
+                            if(negative) then
+                                integral = integral * (-1)
                             end if
                             
                             value % value_type = TYPE_INTEGER
@@ -398,12 +408,14 @@ contains
     !
     ! PARSE INTEGER    
     !
-    integer function parse_integer(unit) result(integral)
+    integer function parse_integer(unit, digit_count) result(integral)
         integer, intent(in) :: unit
+        integer, optional, intent(inout) :: digit_count        
         logical :: eof
         character :: c
-        integer :: integral_factor, tmp
+        integer :: integral_factor, tmp, count
         
+        count = 0
         integral = 0
         integral_factor = 1
         do
@@ -422,8 +434,14 @@ contains
                         integral = integral + tmp
     
                         ! increase the next shift
-                        integral_factor = integral_factor * 10                                                                     
-                    case default                                                  
+                        integral_factor = integral_factor * 10   
+                        
+                        ! increase the count
+                        count = count + 1
+                    case default      
+                        if(present(digit_count)) then
+                            digit_count = count
+                        end if
                         call push_char(c)
                         return
                 end select

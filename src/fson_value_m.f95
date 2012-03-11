@@ -199,6 +199,8 @@ contains
             end if   
         case (TYPE_INTEGER)
             print *, this%value_integer
+        case (TYPE_REAL)
+            print *, this%value_real
         end select
     end subroutine fson_value_print
 
