@@ -16,7 +16,7 @@
     <logicalFolder name="ExampleFiles"
                    displayName="Example Files"
                    projectFiles="false">
-      <itemPath>example/1_basic.f95</itemPath>
+      <itemPath>examples/example1.f95</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
