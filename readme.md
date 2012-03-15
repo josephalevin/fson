@@ -1,11 +1,9 @@
 Fortran 95 JSON Parser
 ======================
 
-More examples coming soon...
-
-Hello World
------------
-    program basic
+Getting Started
+---------------
+    program example
         ! Typical usage should only require an explicit use of the fson module.
         ! The other modules will be used privatley by fson as required.  
         use fson
@@ -17,13 +15,11 @@ Hello World
         value => fson_parse("test1.json")
 
         ! print the parsed data to the console
-        call fson_print(value)
+        call fson_print(value)    
 
-        ! extract data out of the parse value
-        ! code is working.  Will add examples soon
-
+        ! extract data from the parsed value        
 
         ! clean up
         call fson_destroy(value)
 
-    end program basic
+    end program example
