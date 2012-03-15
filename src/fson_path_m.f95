@@ -30,7 +30,7 @@ module fson_path_m
 
     private
     
-    public :: fson_path_get, element_callback
+    public :: fson_path_get, array_callback
     
     interface fson_path_get
         module procedure get_by_path
@@ -301,18 +301,18 @@ contains
     ! GET ARRAY
     !
     
-    subroutine get_array(this, path, element_callback)
+    subroutine get_array(this, path, array_callback)
         type(fson_value), pointer :: this, p, element
         character(len=*), optional :: path   
         integer :: index, count
         
         ! ELEMENT CALLBACK
         interface
-            subroutine element_callback(element, index, count)
+            subroutine array_callback(element, index, count)
                 use fson_value_m
                 type(fson_value), pointer :: element
                 integer :: index, count
-            end subroutine element_callback
+            end subroutine array_callback
         end interface
         
         
@@ -335,7 +335,7 @@ contains
             count = fson_value_count(p)
             do index=1, count
                 element => fson_value_get(p, index)
-                call element_callback(element, index, count)
+                call array_callback(element, index, count)
             end do
         else
             print *, "Resolved value is not an array. ", path
