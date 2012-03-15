@@ -67,6 +67,10 @@ This subroutine is overloaded for different target value types.
     ! Extract the age value. 
     call fson_get(value, "age", age)
 
+Extracting Array
+----------------
+Example coming soon.  It works in the code, so if you really need it look for the array_callback.
+
 JSON Path
 ---------
 
