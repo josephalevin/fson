@@ -27,6 +27,11 @@ Getting Started
 
 Example JSON
 ------------
+This JSON will serve as a reference for the following examples.  
+If you are not already familiar with JSON you can read more at:
+<http://www.json.org/>
+<http://en.wikipedia.org/wiki/JSON>
+
     {
         "name": {
             "first": "George",
@@ -53,7 +58,7 @@ Getting the data from the parsed fson_value to your variable is easy.  All extra
     ! The composer's age will be extract into this variable
     integer :: age
 
-    ! Parse the file.  See getting started example.
+    ! Parse the file.  See the getting started example.
     
     ! Extract the age value.  Use the optional path parameter to specify nested values.
     call fson_get(value, "age", age)
