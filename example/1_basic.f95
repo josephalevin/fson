@@ -25,7 +25,7 @@
 ! Created on March 10, 2012, 5:24 AM
 !
 
-program fson_basic
+program basic
     ! Typical usage should only require an explicit use of the fson module.
     use fson
     
@@ -45,6 +45,5 @@ program fson_basic
     ! clean up
     call fson_destroy(value)
   
-    
-    
-end program fson_basic
+        
+end program basic
