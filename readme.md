@@ -29,8 +29,7 @@ Example JSON
 ------------
 This JSON will serve as a reference for the following examples.  
 If you are not already familiar with JSON you can read more at:
-<http://www.json.org/>
-<http://en.wikipedia.org/wiki/JSON>
+<http://www.json.org/> and <http://en.wikipedia.org/wiki/JSON>.
 
     {
         "name": {
