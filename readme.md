@@ -3,7 +3,8 @@ Fortran 95 JSON Parser
 
 Getting Started
 ---------------
-    program example
+    program example1
+
         ! Typical usage should only require an explicit use of the fson module.
         ! The other modules will be used privatley by fson as required.  
         use fson
@@ -22,4 +23,4 @@ Getting Started
         ! clean up
         call fson_destroy(value)
 
-    end program example
+    end program example1
