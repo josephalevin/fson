@@ -9,10 +9,14 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>src/fson.f95</itemPath>
-      <itemPath>src/fson_example.f95</itemPath>
       <itemPath>src/fson_path_m.f95</itemPath>
       <itemPath>src/fson_string_m.f95</itemPath>
       <itemPath>src/fson_value_m.f95</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ExampleFiles"
+                   displayName="Example Files"
+                   projectFiles="false">
+      <itemPath>example/1_basic.f95</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -29,7 +33,7 @@
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="Debug" type="1">
+    <conf name="Debug" type="3">
       <toolsSet>
         <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU|GNU</compilerSet>
@@ -38,8 +42,10 @@
         <fortranCompilerTool>
           <commandlineTool>gfortran</commandlineTool>
           <commandLine>-J build</commandLine>
-        </fortranCompilerTool>   
-    </compileType>
+        </fortranCompilerTool>
+        <archiverTool>
+        </archiverTool>
+      </compileType>
     </conf>
     <conf name="Release" type="1">
       <toolsSet>

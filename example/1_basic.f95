@@ -25,7 +25,7 @@
 ! Created on March 10, 2012, 5:24 AM
 !
 
-program fson_example
+program fson_basic
     ! Typical usage should only require an explicit use of the fson module.
     use fson
     
@@ -47,4 +47,4 @@ program fson_example
   
     
     
-end program fson_example
+end program fson_basic

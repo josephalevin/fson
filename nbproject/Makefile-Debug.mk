@@ -35,7 +35,6 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/src/fson_path_m.o \
-	${OBJECTDIR}/src/fson_example.o \
 	${OBJECTDIR}/src/fson.o \
 	${OBJECTDIR}/src/fson_string_m.o \
 	${OBJECTDIR}/src/fson_value_m.o
@@ -59,19 +58,17 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fson
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libfson.a
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fson: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libfson.a: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.f} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fson ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libfson.a
+	${AR} -rv ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libfson.a ${OBJECTFILES} 
+	$(RANLIB) ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libfson.a
 
 ${OBJECTDIR}/src/fson_path_m.o: src/fson_path_m.f95 
 	${MKDIR} -p ${OBJECTDIR}/src
 	$(COMPILE.f) -g -o ${OBJECTDIR}/src/fson_path_m.o src/fson_path_m.f95
-
-${OBJECTDIR}/src/fson_example.o: src/fson_example.f95 
-	${MKDIR} -p ${OBJECTDIR}/src
-	$(COMPILE.f) -g -o ${OBJECTDIR}/src/fson_example.o src/fson_example.f95
 
 ${OBJECTDIR}/src/fson.o: src/fson.f95 
 	${MKDIR} -p ${OBJECTDIR}/src
@@ -91,7 +88,7 @@ ${OBJECTDIR}/src/fson_value_m.o: src/fson_value_m.f95
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/fson
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libfson.a
 	${RM} *.mod
 
 # Subprojects
