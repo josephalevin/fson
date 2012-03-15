@@ -48,8 +48,8 @@ If you are not already familiar with JSON you can read more at:
 
 Extracting Data
 ---------------
-
-Getting the data from the parsed fson_value to your variable is easy.  All extraction is performed through an overloaded call to fson_get.
+Getting the data from the parsed fson_value to your variable is easy.  All extraction is performed through a call to fson_get().  
+This subroutine is overloaded for different target value types.
 
     ! Root fson value.  Remember, always use a pointer with fson value.
     type(fson_value), pointer :: value
@@ -66,3 +66,13 @@ Getting the data from the parsed fson_value to your variable is easy.  All extra
     
     ! Extract the age value. 
     call fson_get(value, "age", age)
+
+JSON Path
+---------
+
+| Operator   |                          | 
+|:----------:|:------------------------:|
+| $          | Root object/value        | 
+| @          | The current object/value |
+| .          | Child operator           |
+| []         | Array element            |
