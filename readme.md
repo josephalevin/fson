@@ -70,9 +70,9 @@ This subroutine is overloaded for different target value types.
 JSON Path
 ---------
 
-| Operator   |                          | 
-|:----------:|:------------------------:|
-| $          | Root object/value        | 
-| @          | The current object/value |
-| .          | Child operator           |
-| []         | Array element            |
+    | Operator | Description              | 
+    |----------|--------------------------|
+    |    $     | Root object/value        | 
+    |    @     | The current object/value |
+    |    .     | Child operator           |
+    |    []    | Array element            |
