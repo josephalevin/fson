@@ -149,7 +149,7 @@ contains
                 call push_char(c)
                 call parse_number(unit, value)
             case default
-                print *, "ERROR: Unexpected character while parsing value. ", c
+                print *, "ERROR: Unexpected character while parsing value. '", c, "' ASCII=", iachar(c)
                 call exit (1)
             end select
         end if
@@ -266,7 +266,7 @@ contains
             if (eof) then
                 print *, "Expecting end of string"
                 call exit(1)!
-            else if ('"' == c .and. last .ne. "\") then
+            else if ('"' == c .and. last .ne. '\') then
                 exit
             else
                 last = c
@@ -293,7 +293,7 @@ contains
                 print *, "ERROR: Unexpected end of file while parsing array."
                 call exit (1)
             else if (c .ne. chars(i:i)) then
-                print *, "ERROR: Unexpected character.", c, chars(i:i)
+                print *, "ERROR: Unexpected character.'", c,"'", chars(i:i)
                 call exit (1)
             end if
         end do
@@ -475,10 +475,13 @@ contains
                 read (unit = unit, fmt = "(a)", advance = "no", iostat = ios) c
             end if
             if (ios == end_of_record) then
-                cycle
+                cycle            
             else if (ios == end_of_file) then
                 eof = .true.
                 exit
+            else if (iachar(c) <= 32) then
+                ! non printing ascii characters
+                cycle
             else if (ignore .and. c == " ") then
                 cycle
             else
