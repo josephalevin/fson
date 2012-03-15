@@ -54,10 +54,15 @@ Getting the data from the parsed fson_value to your variable is easy.  All extra
     ! Root fson value.  Remember, always use a pointer with fson value.
     type(fson_value), pointer :: value
 
-    ! The composer's age will be extract into this variable
+    ! The composer's information will be extracted into these variables
+    character(len=50) :: first,last
     integer :: age
 
     ! Parse the file.  See the getting started example.
+
+    ! Extract the name values.  Use the optional path parameter to specify nested values.
+    call fson_get(value, "name.first", first)
+    call fson_get(value, "name.last", last)
     
-    ! Extract the age value.  Use the optional path parameter to specify nested values.
+    ! Extract the age value. 
     call fson_get(value, "age", age)
