@@ -484,7 +484,7 @@ contains
                 cycle
             else if (ignore .and. c == " ") then
                 cycle
-            elseC
+            else
                 popped = c
                 exit
             end if
