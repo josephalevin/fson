@@ -36,6 +36,7 @@ module fson_path_m
         module procedure get_by_path
         module procedure get_integer
         module procedure get_real
+        module procedure get_double
         module procedure get_logical
         module procedure get_chars
         module procedure get_array
@@ -230,6 +231,46 @@ contains
         end if
         
     end subroutine get_real
+    
+    !
+    ! GET DOUBLE
+    !
+    subroutine get_double(this, path, value)
+        type(fson_value), pointer :: this, p
+        character(len=*), optional :: path
+        double precision :: value        
+        
+        
+        nullify(p)                
+        
+        if(present(path)) then
+            call get_by_path(this=this, path=path, p=p)
+        else
+            p => this
+        end if
+        
+        if(.not.associated(p)) then
+            print *, "Unable to resolve path: ", path
+            call exit(1)
+        end if
+                
+        
+        if(p % value_type == TYPE_INTEGER) then            
+            value = p % value_integer
+        else if (p % value_type == TYPE_REAL) then
+            value = p % value_real
+        else if (p % value_type == TYPE_LOGICAL) then
+            if (p % value_logical) then
+                value = 1
+            else
+                value = 0
+            end if
+        else
+            print *, "Unable to resolve value to double: ", path
+            call exit(1)
+        end if
+        
+    end subroutine get_double
     
     
     !
