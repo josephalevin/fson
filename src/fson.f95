@@ -88,7 +88,9 @@ contains
         call parse_value(unit = u, value = p)
 
         ! close the file
-        close (u)
+        if( .not. present(unit)) then
+            close (u)
+        end if
 
     end function fson_parse
 
