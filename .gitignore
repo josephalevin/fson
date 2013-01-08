@@ -3,4 +3,4 @@ dist/
 nbproject/private/
 *.mod
 *.d
-
+.*.swp
