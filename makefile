@@ -1,30 +1,53 @@
+SRC=src
+DIST=dist
+BUILD=build
+
 F95=.f95
 OBJ=.o
-EXE=.exe
+EXE=
 
-LIBTARGET=fson-lib.so
+LIBTARGET=$(DIST)/fson-lib.so
 
 FC = gfortran
 FCFLAGS = -g -fbounds-check
+FMFLAGS = -J$(BUILD)
 LDFLAGS=
 
-# List of example programs
-EXAMPLES = basic 
-FSON = fson_string_m fson_value_m fson_path_m fson
-OBJECTS = $(patsubst %, %.o, $(FSON))
-$(LIBTARGET):$(OBJECTS)
- 
+AR = ar
+ARFLAGS= r
+
 # "make" builds all
-all: examples
+all: lib examples
 
-examples: $(patsubst %, examples/%$(EXE), $(EXAMPLES)) 
+# List of example programs
+EXAMPLES = basic example1
+examples: $(patsubst %, $(DIST)/examples/%$(EXE), $(EXAMPLES)) json
 
-lib:$(LIBTARGET) 
+JSON = $(shell find src -name '*.json')
+json: $(patsubst $(SRC)%, $(DIST)%, $(JSON))
 
-%$(EXE): %$(OBJ)
+FSON = fson_string_m fson_value_m fson_path_m fson
+OBJECTS = $(patsubst %, $(BUILD)/%.o, $(FSON))
+
+$(LIBTARGET) : $(OBJECTS)
+	mkdir -p `dirname $@`
+	$(AR) $(ARFLAGS) $@ $^
+
+lib: $(LIBTARGET)
+
+$(DIST)/%.json : $(SRC)/%.json
+	cp -f $< $@
+
+$(DIST)/%$(EXE) : $(BUILD)/%$(OBJ) $(OBJECTS)
+	mkdir -p `dirname $@`
 	$(FC) $(FCFLAGS) -o $@ $^ $(LDFLAGS)
 
-#
-%$(OBJ): %$(F95)
-	$(FC) $(FCFLAGS) -c $< -o $@
+$(BUILD)/%$(OBJ): $(SRC)/%$(F95)
+	mkdir -p `dirname $@`
+	$(FC) $(FCFLAGS) $(FMFLAGS) -c $< -o $@
 
+clean:
+	rm -rf $(BUILD)
+
+clobber: clean
+	rm -rf $(DIST)
