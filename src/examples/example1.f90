@@ -27,9 +27,10 @@
 
 program example1
 
-    ! Typical usage should only require an explicit use of the fson module.
-    ! The other modules will be used privatley by fson as required.  
+    ! The fson mudule has the basic parser and lookup 
     use fson
+    
+    ! Functions for accessing data as an array
     use fson_value_m, only: fson_value_count, fson_value_get
     character(len=1024) :: strval, strval2
     integer i
@@ -40,7 +41,7 @@ program example1
     ! Parse the json file
     json_data => fson_parse("test1.json")
 
-    ! Get the first and last name
+    ! Get the first and last name and print them
     call fson_get(json_data, "name.first", strval)
     call fson_get(json_data, "name.last",  strval2)
     print *, "name.first = ", trim(strval)
@@ -56,10 +57,10 @@ program example1
     
     ! Loop through each array item
     do i = 1, fson_value_count(array)
-      ! Get the array item
+      ! Get the array item (this is an associative array)
       item => fson_value_get(array, i)
       
-      ! Get the values from the array
+      ! Lookup the values from the array
       call fson_get(item, "type", strval)
       call fson_get(item, "number", strval2)
       
