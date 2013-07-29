@@ -53,7 +53,7 @@ contains
     !
     recursive subroutine get_by_path(this, path, p)
         type(fson_value), pointer :: this, p        
-        character(len=*), intent(inout) :: path
+        character(len=*) :: path
         integer :: i, length, child_i
         character :: c
         logical :: array        
@@ -80,7 +80,7 @@ contains
                     ! this                    
                     p => this
                     child_i = i + 1
-                case (".")                    
+                case (".", "[")                    
                     ! get child member from p                          
                     if (child_i < i) then                          
                         p => fson_value_get(p, path(child_i:i-1))
@@ -94,10 +94,13 @@ contains
                     end if
                     
                     child_i = i+1
-                case ("[")                    
-                    ! start looking for the array element index
-                    array = .true.
-                    child_i = i + 1
+                    
+                    ! check if this is an array
+                    ! if so set the array flag
+                    if (c == "[") then
+                        ! start looking for the array element index
+                        array = .true.
+                    end if
                 case ("]")
                     if (.not.array) then
                         print *, "ERROR: Unexpected ], not missing preceding ["
@@ -384,6 +387,5 @@ contains
         end if
         
     end subroutine get_array
-    
 
 end module fson_path_m

@@ -30,19 +30,45 @@ program example1
     ! Typical usage should only require an explicit use of the fson module.
     ! The other modules will be used privatley by fson as required.  
     use fson
+    use fson_value_m, only: fson_value_count, fson_value_get
+    character(len=1024) :: strval, strval2
+    integer i
 
-    ! declare a pointer variable.  Always use a pointer with fson_value.
-    type(fson_value), pointer :: value
+    ! Declare a pointer variables.  Always use a pointer with fson_value.
+    type(fson_value), pointer :: json_data, array, item
 
-    ! parse the json file
-    value => fson_parse("test1.json")
+    ! Parse the json file
+    json_data => fson_parse("test1.json")
 
-    ! print the parsed data to the console
-    call fson_print(value)
+    ! Get the first and last name
+    call fson_get(json_data, "name.first", strval)
+    call fson_get(json_data, "name.last",  strval2)
+    print *, "name.first = ", trim(strval)
+    print *, "name.last  = ", trim(strval2)
 
-    ! extract data from the parsed value        
+    ! Use a lookup string to get the first phone number
+    call fson_get(json_data, "PhoneNumber[1].number", strval)     
+    print *, "PhoneNumber[1].number = ", trim(strval)
+    print *, ""
+
+    ! Get the phone numbers as an array
+    call fson_get(json_data, "PhoneNumber", array)
+    
+    ! Loop through each array item
+    do i = 1, fson_value_count(array)
+      ! Get the array item
+      item => fson_value_get(array, i)
+      
+      ! Get the values from the array
+      call fson_get(item, "type", strval)
+      call fson_get(item, "number", strval2)
+      
+      ! Print out the values
+      print *, "Phone Number:"
+      print *, "type = ", trim(strval), ", number = ", trim(strval2)
+    end do
 
     ! clean up
-    call fson_destroy(value)
+    call fson_destroy(json_data)
 
 end program example1

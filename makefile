@@ -2,7 +2,7 @@ SRC=src
 DIST=dist
 BUILD=build
 
-F95=.f95
+F95=.f90
 OBJ=.o
 EXE=
 
