@@ -34,7 +34,7 @@ module fson
 
     private
 
-    public :: fson_parse, fson_value, fson_get, fson_print, fson_destroy, fson_value_create, parse_value
+    public :: fson_parse, fson_value, fson_get, fson_print, fson_destroy
 
     ! FILE IOSTAT CODES
     integer, parameter :: end_of_file = -1
