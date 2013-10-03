@@ -20,7 +20,7 @@ ARFLAGS= r
 all: lib examples
 
 # List of example programs
-EXAMPLES = basic example1
+EXAMPLES = basic example1 example2
 examples: $(patsubst %, $(DIST)/examples/%$(EXE), $(EXAMPLES)) json
 
 JSON = $(shell find src -name '*.json')
