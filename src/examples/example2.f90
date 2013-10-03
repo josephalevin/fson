@@ -51,7 +51,7 @@ program example2
     &    {"type"  : "fax",  "number": "646 555-4567"} ]&
     &}'
     ! Parse the json file
-    json_data => fson_parse("test1.json")
+    json_data => fson_parse(str=inputString)
 
     ! Get the first and last name and print them
     call fson_get(json_data, "name.first", strval)

@@ -84,6 +84,7 @@ contains
             ! http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51055
             allocate(character(len = strLen) :: strBuffer)
             strBuffer = str
+            u = 0
         else 
             print *, "ERROR: Need a file or a string"
             call exit (1)
