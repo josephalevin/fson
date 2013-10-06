@@ -28,7 +28,7 @@ examples: $(patsubst %, $(DIST)/examples/%$(EXE), $(EXAMPLES)) json
 
 # List of tests
 TESTS = fruit_driver
-tests: $(TESTOBJS) $(patsubst %, $(DIST)/$(TESTSDIR)/%$(EXE), $(TESTS)) testjson
+tests: $(TESTOBJS) $(patsubst %, $(DIST)/$(TESTSDIR)/%$(EXE), $(TESTS)) json
 
 # List of test object
 TESTSRC = fson_test
@@ -40,9 +40,6 @@ FRUITOBJS = $(patsubst %, $(BUILD)/$(FUITDIR)/%$(OBJ), $(FRUIT))
 
 JSON = $(shell find src -name '*.json')
 json: $(patsubst $(SRC)%, $(DIST)%, $(JSON))
-
-TESTJSON = $(shell find src -name '*.json')
-testjson: $(patsubst $(SRC)%, $(DIST)%, $(JSON))
 
 FSON = fson_string_m fson_value_m fson_path_m fson
 OBJECTS = $(patsubst %, $(BUILD)/%$(OBJ), $(FSON))
@@ -60,6 +57,7 @@ $(FRUITTARGET) : $(FRUITOBJS)
 libfruit: $(FRUITTARGET)
 
 $(DIST)/%.json : $(SRC)/%.json
+	mkdir -p $(@D)
 	cp -f $< $@
 
 $(DIST)/%$(EXE) : $(BUILD)/%$(OBJ) $(OBJECTS)
@@ -68,8 +66,6 @@ $(DIST)/%$(EXE) : $(BUILD)/%$(OBJ) $(OBJECTS)
 
 # build test program
 $(DIST)/$(TESTSDIR)/%$(EXE) : $(TESTOBJS) $(FRUITTARGET) $(BUILD)/$(TESTSDIR)/%$(OBJ) $(LIBTARGET)  
-	@echo $@
-	@echo $^
 	mkdir -p `dirname $@`
 	$(FC) $(FCFLAGS) -I$(BUILD) -o $@ $^ $(LDFLAGS)
 
