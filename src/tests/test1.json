@@ -2,6 +2,7 @@
      "name"       : {"first": "John", "last" : "Smith"},
      "age"        : 25,
      "testReal"   : 8.1235,
+     "testDouble" : 8.1234567890123456789,
      "testExp"    : 1.23e12,
      "address"    :
        { "streetAddress": "21 2nd Street",
