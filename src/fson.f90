@@ -436,13 +436,17 @@ contains
         integer, intent(in) :: unit
         character(*), intent(inout) :: str
         integer, optional, intent(inout) :: digit_count
-        logical :: eof
+        logical :: eof, found_sign, found_digit
         character :: c
-        integer :: tmp, count
+        integer :: tmp, icount, isign
         integer, parameter :: max_integer_length = 18
 
-        count = 0
+
+        icount = 0
         integral = 0
+        isign = 1
+        found_sign = .false.
+        found_digit = .false.
         do
             c = pop_char(unit, str, eof = eof, skip_ws = .true.)
             if (eof) then
@@ -450,27 +454,42 @@ contains
                 call exit (1)
             else
                 select case(c)
+                case ("+")
+                    if (found_sign.or.found_digit) then
+                        print *, "ERROR: Miss formatted number."
+                        call exit(1)
+                    end if
+                    found_sign = .true.
+                case ("-")
+                    if (found_sign.or.found_digit) then
+                        print *, "ERROR: Miss formatted number."
+                        call exit(1)
+                    end if
+                    found_sign = .true.
+                    isign = -1
                 case ("0":"9")
-                    if (count > max_integer_length) then
+                    found_sign = .true.
+                    if (icount > max_integer_length) then
                         print *, "ERROR: Too many digits for an integer."
                         call exit(1)
                     end if
                     ! digit        
                     read (c, '(i1)') tmp
                     ! shift
-                    if (count > 0) then
+                    if (icount > 0) then
                         integral = integral * 10
                     end if
                     ! add
                     integral = integral + tmp
 
-                    ! increase the count
-                    count = count + 1
+                    ! increase the icount
+                    icount = icount + 1
                 case default
                     if (present(digit_count)) then
-                        digit_count = count
+                        digit_count = icount
                     end if
                     call push_char(c)
+                    integral = isign * integral
                     return
                 end select
             end if

@@ -6,6 +6,7 @@
      "testDouble"   : 8.1234567890123456789,
      "testExp"      : 1.23e12,
      "testExpDouble": 1.234567890123456790e300,
+     "testNegExp"   : 1.23e-12,
      "address"      :
        { "streetAddress": "21 2nd Street",
          "city"         : "New York",

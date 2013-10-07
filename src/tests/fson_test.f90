@@ -41,7 +41,7 @@ module fson_test
     call fson_get(json_data, "testDouble", testDouble)
     call fson_get(json_data, "testExp", testExp)
     call fson_get(json_data, "testExpDouble", testExpDouble)
-!    call fson_get(json_data, "testNegExp", testNegExp)
+    call fson_get(json_data, "testNegExp", testNegExp)
 
     call assert_equals(25, age, "integer")
     call assert_equals(8.1235, testReal, "real")
@@ -50,7 +50,7 @@ module fson_test
     call assert_true(abs((testDouble-8.1234567890123456789d0)/8.1234567890123456789d0).lt.1e-15, "double")
     call assert_true(abs((testExpDouble-1.234567890123456790d300)/1.234567890123456790d300).lt.1e-15, "double exp")
     call assert_equals(1.23E12, testExp, "real exp")
-!    call assert_equals(5.43E-21, testNegExp)
+    call assert_equals(1.23e-12, testNegExp)
 
     call fson_destroy(json_data)
   end subroutine
