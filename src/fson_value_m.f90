@@ -53,6 +53,7 @@ module fson_value_m
         logical :: value_logical
         integer :: value_integer
         real :: value_real
+        double precision :: value_double
         type(fson_string), pointer :: value_string => null()
         type(fson_value), pointer :: next => null()
         type(fson_value), pointer :: parent => null()
@@ -278,7 +279,7 @@ contains
         case (TYPE_INTEGER)
             print *, repeat(" ", spaces), this % value_integer
         case (TYPE_REAL)
-            print *, repeat(" ", spaces), this % value_real
+            print *, repeat(" ", spaces), this % value_double
         end select
     end subroutine fson_value_print
        

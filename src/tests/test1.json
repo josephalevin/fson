@@ -1,10 +1,12 @@
 {
-     "name"       : {"first": "John", "last" : "Smith"},
-     "age"        : 25,
-     "testReal"   : 8.1235,
-     "testDouble" : 8.1234567890123456789,
-     "testExp"    : 1.23e12,
-     "address"    :
+     "name"         : {"first": "John", "last" : "Smith"},
+     "age"          : 25,
+     "testReal"     : 8.1235,
+     "testLongReal" : 8.123456789,
+     "testDouble"   : 8.1234567890123456789,
+     "testExp"      : 1.23e12,
+     "testExpDouble": 1.234567890123456790e300,
+     "address"      :
        { "streetAddress": "21 2nd Street",
          "city"         : "New York",
          "state"        : "NY",

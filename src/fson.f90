@@ -333,7 +333,7 @@ contains
         logical :: eof, negative, decimal, scientific
         character :: c
         integer :: integral, exp, digit_count
-        real :: frac
+        double precision :: frac
 
 
         ! first character is either - or a digit        
@@ -372,7 +372,7 @@ contains
                     end if
                     decimal = .true.
                     frac = parse_integer(unit, str, digit_count)
-                    frac = frac / (10 ** digit_count)
+                    frac = frac / (10.0d0 ** digit_count)
                 case ("e", "E")
                     ! this is already an exponent number
                     if (scientific) then
@@ -393,7 +393,7 @@ contains
 
                         if (scientific) then
                             ! apply exponent
-                            frac = frac * (10 ** exp)
+                            frac = frac * (10.0d0 ** exp)
                         end if
 
                         ! apply negative
@@ -401,13 +401,14 @@ contains
                             frac = frac * (-1)
                         end if
 
-
                         value % value_type = TYPE_REAL
                         value % value_real = frac
+                        value % value_double = frac
+
                     else
                         if (scientific) then
                         ! apply exponent
-                        integral = integral * (10 ** exp)
+                        integral = integral * (10.0d0 ** exp)
                         end if
 
                         ! apply negative
@@ -431,13 +432,14 @@ contains
     !
     ! PARSE INTEGER    
     !
-    integer function parse_integer(unit, str, digit_count) result(integral)
+    integer(kind=8) function parse_integer(unit, str, digit_count) result(integral)
         integer, intent(in) :: unit
         character(*), intent(inout) :: str
         integer, optional, intent(inout) :: digit_count
         logical :: eof
         character :: c
         integer :: tmp, count
+        integer, parameter :: max_integer_length = 18
 
         count = 0
         integral = 0
@@ -449,6 +451,10 @@ contains
             else
                 select case(c)
                 case ("0":"9")
+                    if (count > max_integer_length) then
+                        print *, "ERROR: Too many digits for an integer."
+                        call exit(1)
+                    end if
                     ! digit        
                     read (c, '(i1)') tmp
                     ! shift

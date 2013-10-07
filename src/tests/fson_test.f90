@@ -32,21 +32,23 @@ module fson_test
     use fson_value_m
     type(fson_value), pointer :: json_data, array, item
     integer :: age
-    REAL :: testReal, testExp, testNegExp
-    DOUBLE PRECISION :: testDouble
+    REAL :: testReal, testExp, testNegExp, testLongReal
+    DOUBLE PRECISION :: testDouble, testExpDouble
     character(len=1024) :: strval, strval2
     call fson_get(json_data, "age", age)
     call fson_get(json_data, "testReal", testReal)
+    call fson_get(json_data, "testLongReal", testLongReal)
     call fson_get(json_data, "testDouble", testDouble)
     call fson_get(json_data, "testExp", testExp)
+    call fson_get(json_data, "testExpDouble", testExpDouble)
 !    call fson_get(json_data, "testNegExp", testNegExp)
 
     call assert_equals(25, age, "integer")
     call assert_equals(8.1235, testReal, "real")
-    call assert_true(abs(testReal-8.1235).lt.1e-10, "real")
-    print *,testDouble
-    print *,testExp
-    call assert_true(abs(testDouble-8.1234567890123456789).lt.1e-5, "double")
+    call assert_equals(8.1234567890123456789, testLongReal, "longReal")
+    call assert_true(abs(testReal-8.1235).lt.1e-8, "real")
+    call assert_true(abs((testDouble-8.1234567890123456789d0)/8.1234567890123456789d0).lt.1e-15, "double")
+    call assert_true(abs((testExpDouble-1.234567890123456790d300)/1.234567890123456790d300).lt.1e-15, "double exp")
     call assert_equals(1.23E12, testExp, "real exp")
 !    call assert_equals(5.43E-21, testNegExp)
 
@@ -59,8 +61,9 @@ module fson_test
     character(1024)::inputString
     inputString = read_file("test1.json")
 
-    print *, inputString
+!    print *, inputString
     json_data => fson_parse(str=inputString)
+!    call fson_print(json_data)
     call subtest_fson_test1(json_data)
   end subroutine test_fson_parse_string
 
@@ -68,6 +71,7 @@ module fson_test
     use fson
     type(fson_value), pointer :: json_data
     json_data => fson_parse("test1.json")
+!    call fson_print(json_data)
     call subtest_fson_test1(json_data)
   end subroutine test_fson_parse_file
 

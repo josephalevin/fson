@@ -261,7 +261,7 @@ contains
         if(p % value_type == TYPE_INTEGER) then            
             value = p % value_integer
         else if (p % value_type == TYPE_REAL) then
-            value = p % value_real
+            value = p % value_double
         else if (p % value_type == TYPE_LOGICAL) then
             if (p % value_logical) then
                 value = 1
