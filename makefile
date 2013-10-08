@@ -2,7 +2,7 @@ SRC=src
 DIST=dist
 BUILD=build
 TESTSDIR=tests
-FUITDIR=tests/fruit
+FRUITDIR=tests/fruit
 
 F95=.f90
 OBJ=.o
@@ -26,17 +26,17 @@ all: lib examples
 EXAMPLES = basic example1 example2
 examples: $(patsubst %, $(DIST)/examples/%$(EXE), $(EXAMPLES)) json
 
-# List of tests
-TESTS = fruit_driver
-tests: $(TESTOBJS) $(patsubst %, $(DIST)/$(TESTSDIR)/%$(EXE), $(TESTS)) json
+# Fruit module for testing
+FRUIT = fruit_util fruit
+FRUITOBJS = $(patsubst %, $(BUILD)/$(FRUITDIR)/%$(OBJ), $(FRUIT))
 
 # List of test object
 TESTSRC = fson_test
 TESTOBJS = $(patsubst %, $(BUILD)/$(TESTSDIR)/%$(OBJ), $(TESTSRC))
 
-# Fruit module for testing
-FRUIT = fruit_util fruit
-FRUITOBJS = $(patsubst %, $(BUILD)/$(FUITDIR)/%$(OBJ), $(FRUIT))
+# List of tests
+TESTS = fruit_driver
+tests: $(FRUITTARGET) $(LIBTARGET) $(TESTOBJS) $(patsubst %, $(DIST)/$(TESTSDIR)/%$(EXE), $(TESTS)) json
 
 JSON = $(shell find src -name '*.json')
 json: $(patsubst $(SRC)%, $(DIST)%, $(JSON))
@@ -60,19 +60,10 @@ $(DIST)/%.json : $(SRC)/%.json
 	mkdir -p $(@D)
 	cp -f $< $@
 
-$(DIST)/%$(EXE) : $(BUILD)/%$(OBJ) $(OBJECTS)
-	mkdir -p `dirname $@`
-	$(FC) $(FCFLAGS) -o $@ $^ $(LDFLAGS)
-
 # build test program
-$(DIST)/$(TESTSDIR)/%$(EXE) : $(TESTOBJS) $(FRUITTARGET) $(BUILD)/$(TESTSDIR)/%$(OBJ) $(LIBTARGET)  
+$(DIST)/$(TESTSDIR)/%$(EXE) : $(TESTOBJS) $(FRUITTARGET) $(BUILD)/$(TESTSDIR)/%$(OBJ) $(LIBTARGET)
 	mkdir -p `dirname $@`
 	$(FC) $(FCFLAGS) -I$(BUILD) -o $@ $^ $(LDFLAGS)
-
-# build fson objects
-$(BUILD)/%$(OBJ): $(SRC)/%$(F95)
-	mkdir -p `dirname $@`
-	$(FC) $(FCFLAGS) $(FMFLAGS) -c $< -o $@
 
 # build fruit library
 $(BUILD)/$(FRUITDIR)/%$(OBJ): $(SRC)/$(FRUITDIR)/%$(F95)
@@ -84,8 +75,18 @@ $(BUILD)/$(TESTSDIR)/%$(OBJ): $(SRC)/$(TESTSDIR)/%$(F95)
 	mkdir -p `dirname $@`
 	$(FC) $(FCFLAGS) $(FMFLAGS) -c $< -o $@
 
+# build fson objects
+$(BUILD)/%$(OBJ): $(SRC)/%$(F95)
+	mkdir -p `dirname $@`
+	$(FC) $(FCFLAGS) $(FMFLAGS) -c $< -o $@
+
+$(DIST)/%$(EXE) : $(BUILD)/%$(OBJ) $(OBJECTS)
+	mkdir -p `dirname $@`
+	$(FC) $(FCFLAGS) -o $@ $^ $(LDFLAGS)
+
 clean:
 	rm -rf $(BUILD)
+	rm -rf *.mod
 
 clobber: clean
 	rm -rf $(DIST)
