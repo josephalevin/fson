@@ -142,7 +142,8 @@ contains
                 call parse_array(unit, str, value)
             case ("]")
                 ! end an empty array
-                nullify(value)
+               call push_char(c)
+               nullify(value)
             case ('"')
                 ! string                                      
                 value % value_type = TYPE_STRING
