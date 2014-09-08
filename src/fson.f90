@@ -531,7 +531,7 @@ contains
             else if (ios == end_of_file) then
                 eof = .true.
                 exit
-            else if (iachar(c) <= 32) then
+            else if (iachar(c) <= 31) then
                 ! non printing ascii characters
                 cycle
             else if (ignore .and. c == " ") then
