@@ -8,7 +8,7 @@ F95=.f90
 OBJ=.o
 EXE=
 
-LIBTARGET=$(DIST)/fson-lib.so
+LIBTARGET=$(DIST)/libfson.so
 FRUITTARGET=$(DIST)/fruit-lib.so
 
 FC = gfortran
