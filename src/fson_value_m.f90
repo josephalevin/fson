@@ -78,6 +78,7 @@ contains
     function fson_value_create() result(new)
         type(fson_value), pointer :: new
 
+        nullify(new)
         allocate(new)
 
     end function fson_value_create
@@ -86,30 +87,36 @@ contains
     ! FSON VALUE DESTROY
     !
     recursive subroutine fson_value_destroy(this)
-        type(fson_value), pointer :: this
-        
-        if(associated(this % children)) then
-            call fson_value_destroy(this % children)
-            nullify(this % children)
-        end if
-        
-        if(associated(this % next)) then
-            call fson_value_destroy(this % next)
-            nullify (this % next)
-        end if
-        
-        if(associated(this % name)) then
+
+      implicit none
+      type(fson_value), pointer :: this
+
+      if (associated(this)) then
+
+         if(associated(this % name)) then
             call fson_string_destroy(this % name)
             nullify (this % name)
-        end if
-        
-        if(associated(this % value_string)) then
+         end if
+
+         if(associated(this % value_string)) then
             call fson_string_destroy(this % value_string)
             nullify (this % value_string)
-        end if
-        
-        nullify(this)
-                
+         end if
+
+         if(associated(this % children)) then
+            call fson_value_destroy(this % children)
+            nullify(this % children)
+         end if
+
+         if(associated(this % next)) then
+            call fson_value_destroy(this % next)
+            nullify (this % next)
+         end if
+
+         deallocate(this)
+         nullify(this)
+
+      end if
 
     end subroutine fson_value_destroy
 
