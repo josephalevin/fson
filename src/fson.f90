@@ -62,7 +62,7 @@ contains
         character(len = *), optional, intent(in) :: str
         character(len=:),allocatable :: strBuffer
         logical :: unit_available
-        integer :: u, strLen
+        integer :: u
         ! init the pointer to null
         nullify(p)
 
@@ -79,10 +79,6 @@ contains
                 u = u + 1
             end do
         elseif (present(str)) then
-            strLen = len(str)
-            ! this only works with gfortran >= 4.8.1
-            ! http://gcc.gnu.org/bugzilla/show_bug.cgi?id=51055
-            allocate(character(len = strLen) :: strBuffer)
             strBuffer = str
             u = 0
         else 
