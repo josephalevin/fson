@@ -63,6 +63,7 @@ contains
         character(len=*), optional :: chars
         type(fson_string), pointer :: new
 
+        nullify(new)
         allocate(new)
         
         ! append chars if available
@@ -76,27 +77,37 @@ contains
     ! FSON STRING CREATE
     !
     recursive subroutine fson_string_destroy(this)
-        type(fson_string), pointer :: this
-        
-        if(associated(this % next)) then
+
+      implicit none
+      type(fson_string), pointer :: this
+
+      if (associated(this)) then
+
+         if(associated(this % next)) then
             call fson_string_destroy(this % next)
-        end if
-        
-        nullify (this % next)
-        nullify (this)
+         end if
+
+         deallocate(this)
+         nullify (this)
+
+      end if
+
     end subroutine fson_string_destroy
 
     !
     ! ALLOCATE BLOCK
     !
     subroutine allocate_block(this)
-        type(fson_string), pointer :: this
-        type(fson_string), pointer :: new
 
-        if (.not.associated(this % next)) then
-            allocate(new)
-            this % next => new
-        end if
+      implicit none
+      type(fson_string), pointer :: this
+      type(fson_string), pointer :: new
+
+      if (.not.associated(this % next)) then
+         nullify(new)
+         allocate(new)
+         this % next => new
+      end if
 
     end subroutine allocate_block
 
