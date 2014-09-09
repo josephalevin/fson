@@ -519,6 +519,7 @@ contains
                 ! there is a character pushed back on, most likely from the number parsing                
                 c = pushed_char(pushed_index:pushed_index)
                 pushed_index = pushed_index - 1
+                ios = 0
             else
                 if (unit .gt. 0) then
                     read (unit = unit, fmt = "(a)", advance = "no", iostat = ios) c
