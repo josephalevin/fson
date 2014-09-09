@@ -284,7 +284,7 @@ contains
             c = pop_char(unit, str, eof = eof, skip_ws = .false.)
             if (eof) then
                 print *, "Expecting end of string"
-                call exit(1)!
+                call exit(1)
             else if ('"' == c .and. last .ne. '\') then
                 exit
             else
