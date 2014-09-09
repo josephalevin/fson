@@ -192,6 +192,8 @@ contains
         string => fson_string_create(name)
         
         p => get_by_name_string(this, string)
+
+        call fson_string_destroy(string)
         
     end function get_by_name_chars
     
