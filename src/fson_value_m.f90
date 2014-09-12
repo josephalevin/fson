@@ -58,6 +58,7 @@ module fson_value_m
         type(fson_value), pointer :: next => null()
         type(fson_value), pointer :: parent => null()
         type(fson_value), pointer :: children => null()
+        type(fson_value), pointer :: tail => null()
     end type fson_value
 
     !
@@ -113,6 +114,10 @@ contains
             nullify (this % next)
          end if
 
+         if(associated(this % tail)) then
+            nullify (this % tail)
+         end if
+
          deallocate(this)
          nullify(this)
 
@@ -123,28 +128,26 @@ contains
     !
     ! FSON VALUE ADD
     !
-    ! Adds the memeber to the linked list
+    ! Adds the member to the linked list
+
     subroutine fson_value_add(this, member)
-        type(fson_value), pointer :: this, member, p
-        character(len = 100) :: tmp
 
-        ! associate the parent
-        member % parent => this
-        
-        ! add to linked list
-        if (associated(this % children)) then
-            ! get to the tail of the linked list  
-            p => this % children
-            do while (associated(p % next))
-                p => p % next
-            end do
+      implicit none
+      type(fson_value), pointer :: this, member
 
-            p % next => member
-        else
-            this % children => member
-        end if                
+      ! associate the parent
+      member % parent => this
 
-    end subroutine
+      ! add to linked list
+      if (associated(this % children)) then
+         this % tail % next => member
+      else
+         this % children => member
+      end if
+
+      this % tail => member
+
+    end subroutine fson_value_add
 
     !
     ! FSON_VALUE_COUNT
