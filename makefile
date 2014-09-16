@@ -10,7 +10,7 @@ EXE=
 LIBTARGET=$(DIST)/libfson.so
 
 FC = gfortran
-FCFLAGS = -O2 #-g -fbounds-check
+FCFLAGS = -O2
 FMFLAGS = -J$(BUILD)
 LDFLAGS=
 
