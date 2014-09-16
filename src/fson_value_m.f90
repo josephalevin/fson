@@ -126,7 +126,7 @@ contains
             nullify(this % children)
          end if
 
-         if ((associated(this % next)) .and. (destroy_next)) then
+         if ((associated(this % next)) .and. (donext)) then
             call fson_value_destroy(this % next)
             nullify (this % next)
          end if
