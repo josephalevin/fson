@@ -54,6 +54,7 @@ module fson_value_m
         integer :: value_integer
         real :: value_real
         double precision :: value_double
+        integer, private :: count = 0
         type(fson_string), pointer :: value_string => null()
         type(fson_value), pointer :: next => null()
         type(fson_value), pointer :: parent => null()
@@ -146,6 +147,7 @@ contains
       end if
 
       this % tail => member
+      this % count = this % count + 1
 
     end subroutine fson_value_add
 
@@ -155,14 +157,7 @@ contains
     integer function fson_value_count(this) result(count)
         type(fson_value), pointer :: this, p
 
-        count = 0
-
-        p => this % children
-
-        do while (associated(p))
-            count = count + 1
-            p => p % next
-        end do
+        count = this % count
 
     end function
 
