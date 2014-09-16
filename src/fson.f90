@@ -233,37 +233,39 @@ contains
     !
     ! PARSE ARRAY
     !    
-    recursive subroutine parse_array(unit, str, array)
-        integer, intent(inout) :: unit
-        character(*), intent(inout) :: str
-        type(fson_value), pointer :: array, element
+    subroutine parse_array(unit, str, array)
 
-        logical :: eof
-        character :: c
+      implicit none
+      integer, intent(inout) :: unit
+      character(*), intent(inout) :: str
+      type(fson_value), pointer :: array, element
 
+      logical :: eof, finished
+      character :: c
 
-        ! try to parse an element value
-        element => fson_value_create()
-        call parse_value(unit, str, element)
+      finished = .false.
+      do while (.not. finished)
 
-        ! parse value will disassociate an empty array value
-        if (associated(element)) then
+         ! try to parse an element value
+         element => fson_value_create()
+         call parse_value(unit, str, element)
+
+         ! parse value will disassociate an empty array value
+         if (associated(element)) then
             call fson_value_add(array, element)
-        end if
+         end if
 
+         ! pop the next character
+         c = pop_char(unit, str, eof = eof, skip_ws = .true.)
 
-        ! popped the next character
-        c = pop_char(unit, str, eof = eof, skip_ws = .true.)
-
-        if (eof) then
-            return
-        else if ("," == c) then
-            ! parse the next element
-            call parse_array(unit, str, array)
-        else if ("]" == c) then
+         if (eof) then
+            finished = .true.
+         else if ("]" == c) then
             ! end of array
-            return
-        end if
+            finished = .true.
+         end if
+
+      end do
 
     end subroutine parse_array
 
