@@ -88,10 +88,21 @@ contains
     !
     ! FSON VALUE DESTROY
     !
-    recursive subroutine fson_value_destroy(this)
+    recursive subroutine fson_value_destroy(this, destroy_next)
 
       implicit none
       type(fson_value), pointer :: this
+      logical, intent(in), optional :: destroy_next
+
+      type(fson_value), pointer :: p
+      integer :: count
+      logical :: donext
+
+      if (present(destroy_next)) then
+         donext = destroy_next
+      else
+         donext = .true.
+      end if
 
       if (associated(this)) then
 
@@ -106,11 +117,16 @@ contains
          end if
 
          if(associated(this % children)) then
-            call fson_value_destroy(this % children)
+            do while (this % count > 0)
+               p => this % children
+               this % children => this % children % next
+               this % count = this % count - 1
+               call fson_value_destroy(p, .false.)
+            end do
             nullify(this % children)
          end if
 
-         if(associated(this % next)) then
+         if ((associated(this % next)) .and. (destroy_next)) then
             call fson_value_destroy(this % next)
             nullify (this % next)
          end if
