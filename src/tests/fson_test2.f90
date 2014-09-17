@@ -82,21 +82,17 @@ contains
 
     implicit none
 
-    integer, parameter :: vals(5) = [7, 1, -2, 4, -10]
-    type(fson_value), pointer :: data, arr, item
-    integer :: i, val
+    integer, parameter :: expected(5) = [7, 1, -2, 4, -10]
+    type(fson_value), pointer :: data
+    integer, allocatable :: vals(:)
     
     data => fson_parse("test2.json")
 
-    call fson_get(data, "array2", arr)
-
-    do i = 1, fson_value_count(arr)
-       item => fson_value_get(arr, i)
-       call fson_get(item, "", val)
-       call assert_equals(vals(i), val, "test_array_int")
-    end do
+    call fson_get(data, "array2", vals)
+    call assert_equals(expected, vals, size(expected), "test_array_int")
 
     call fson_destroy(data)
+    deallocate(vals)
 
   end subroutine test_array_int
 
