@@ -382,9 +382,10 @@ contains
         
         if(p % value_type == TYPE_ARRAY) then            
             count = fson_value_count(p)
-            do index=1, count
-                element => fson_value_get(p, index)
+            element => p % children
+            do index = 1, count
                 call array_callback(element, index, count)
+                element => element % next
             end do
         else
             print *, "Resolved value is not an array. ", path
