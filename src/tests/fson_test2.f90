@@ -12,6 +12,26 @@ contains
 
 !------------------------------------------------------------------------
 
+  subroutine test_array_int()
+
+    implicit none
+
+    integer, parameter :: expected(5) = [7, 1, -2, 4, -10]
+    type(fson_value), pointer :: data
+    integer, allocatable :: vals(:)
+    
+    data => fson_parse("test2.json")
+
+    call fson_get(data, "array2", vals)
+    call assert_equals(expected, vals, size(expected), "test_array_int")
+
+    call fson_destroy(data)
+    deallocate(vals)
+
+  end subroutine test_array_int
+
+!------------------------------------------------------------------------
+
   subroutine test_array_real()
 
     implicit none
@@ -23,7 +43,7 @@ contains
     data => fson_parse("test2.json")
 
     call fson_get(data, "array1", vals)
-    call assert_equals(expected, vals, size(expected), "test_array")
+    call assert_equals(expected, vals, size(expected), "test_array_real")
 
     call fson_destroy(data)
     deallocate(vals)
@@ -44,12 +64,32 @@ contains
     data => fson_parse("test2.json")
 
     call fson_get(data, "array1", vals)
-    call assert_equals(expected, vals, size(expected), "test_array")
+    call assert_equals(expected, vals, size(expected), "test_array_double")
 
     call fson_destroy(data)
     deallocate(vals)
 
   end subroutine test_array_double
+
+!------------------------------------------------------------------------
+
+  subroutine test_array_logical()
+
+    implicit none
+
+    logical, parameter :: expected(4) = [.true., .false., .true., .false.]
+    type(fson_value), pointer :: data
+    logical, allocatable :: vals(:)
+
+    data => fson_parse("test2.json")
+
+    call fson_get(data, "array3", vals)
+    call assert_equals(expected, vals, size(expected), "test_array_logical")
+
+    call fson_destroy(data)
+    deallocate(vals)
+
+  end subroutine test_array_logical
 
 !------------------------------------------------------------------------
 
@@ -92,26 +132,6 @@ contains
     call fson_destroy(data)
 
   end subroutine test_dict
-
-!------------------------------------------------------------------------
-
-  subroutine test_array_int()
-
-    implicit none
-
-    integer, parameter :: expected(5) = [7, 1, -2, 4, -10]
-    type(fson_value), pointer :: data
-    integer, allocatable :: vals(:)
-    
-    data => fson_parse("test2.json")
-
-    call fson_get(data, "array2", vals)
-    call assert_equals(expected, vals, size(expected), "test_array_int")
-
-    call fson_destroy(data)
-    deallocate(vals)
-
-  end subroutine test_array_int
 
 !------------------------------------------------------------------------
 

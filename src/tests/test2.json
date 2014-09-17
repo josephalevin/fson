@@ -5,5 +5,6 @@
 	      "logical": true,
 	      "string": "Hello world"
 	     },
-    "array2": [7, 1, -2 , 4, -10]
+    "array2": [7, 1, -2 , 4, -10],
+    "array3": [true, false, true, false]
 }
