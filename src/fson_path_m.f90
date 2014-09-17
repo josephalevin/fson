@@ -40,6 +40,7 @@ module fson_path_m
         module procedure get_logical
         module procedure get_chars
         module procedure get_array_integer
+        module procedure get_array_real
     end interface fson_path_get
 
     abstract interface
@@ -416,5 +417,30 @@ contains
       end subroutine array_callback_integer
 
     end subroutine get_array_integer
+
+!
+! GET ARRAY REAL
+!
+    subroutine get_array_real(this, path, arr)
+
+      implicit none
+      type(fson_value), pointer, intent(in) :: this
+      character(len=*), intent(in), optional :: path   
+      real, allocatable, intent(out) :: arr(:)
+
+      if (allocated(arr)) deallocate(arr)
+      call get_array(this, path, array_callback_real)
+
+    contains
+
+      subroutine array_callback_real(element, i, count)
+        implicit none
+        type(fson_value), pointer, intent(in) :: element
+        integer, intent(in) :: i, count
+        if (.not. allocated(arr)) allocate(arr(count))
+        call fson_path_get(element, "", arr(i))
+      end subroutine array_callback_real
+
+    end subroutine get_array_real
 
 end module fson_path_m
