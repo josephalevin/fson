@@ -118,7 +118,7 @@ type = fax, number = 646555-4567
 
 Extracting arrays
 -----------------
-You can also extract entire arrays, as Fortran allocatable arrays, using fson_get():
+You can also extract entire arrays, as Fortran allocatable arrays, using fson_get(). The following example parses a JSON file containing an array of real numbers called "arr", and prints the array:
 
 ```fortran
 program extract_array
