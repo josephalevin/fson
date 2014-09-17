@@ -6,6 +6,8 @@ module fson_test2
 
   implicit none
 
+  integer, parameter :: dp = kind(0.d0)
+
 contains
 
 !------------------------------------------------------------------------
@@ -27,6 +29,27 @@ contains
     deallocate(vals)
 
   end subroutine test_array_real
+
+!------------------------------------------------------------------------
+
+  subroutine test_array_double()
+
+    implicit none
+
+    real(dp), parameter :: expected(7) = &
+         [-3.0_dp, -2.1_dp, -1.2_dp, 0.0_dp, 1.9_dp, 2.8_dp, 3.7_dp]
+    type(fson_value), pointer :: data
+    real(dp), allocatable :: vals(:)
+
+    data => fson_parse("test2.json")
+
+    call fson_get(data, "array1", vals)
+    call assert_equals(expected, vals, size(expected), "test_array")
+
+    call fson_destroy(data)
+    deallocate(vals)
+
+  end subroutine test_array_double
 
 !------------------------------------------------------------------------
 
