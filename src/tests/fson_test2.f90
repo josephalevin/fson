@@ -10,29 +10,23 @@ contains
 
 !------------------------------------------------------------------------
 
-  subroutine test_array()
+  subroutine test_array_real()
 
     implicit none
 
-    real, parameter :: vals(7) = [-3.0, -2.1, -1.2, 0.0, 1.9, 2.8, 3.7]
-    type(fson_value), pointer :: data, arr, item
-    integer :: i
-    real :: val
-    real, parameter :: tol = 1.e-9
-    
+    real, parameter :: expected(7) = [-3.0, -2.1, -1.2, 0.0, 1.9, 2.8, 3.7]
+    type(fson_value), pointer :: data
+    real, allocatable :: vals(:)
+
     data => fson_parse("test2.json")
 
-    call fson_get(data, "array1", arr)
-
-    do i = 1, fson_value_count(arr)
-       item => fson_value_get(arr, i)
-       call fson_get(item, "", val)
-       call assert_equals(vals(i), val, tol, "test_array")
-    end do
+    call fson_get(data, "array1", vals)
+    call assert_equals(expected, vals, size(expected), "test_array")
 
     call fson_destroy(data)
+    deallocate(vals)
 
-  end subroutine test_array
+  end subroutine test_array_real
 
 !------------------------------------------------------------------------
 
