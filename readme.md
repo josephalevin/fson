@@ -109,6 +109,29 @@ The program output is the following:
     Phone Number:
     type = fax, number = 646555-4567
 
+Extracting arrays
+-----------------
+You can also extract entire arrays, as Fortran allocatable arrays, using fson_get():
+
+```fortran
+program extract_array
+
+  use fson
+  implicit none
+  type(fson_value), pointer :: data
+  real, allocatable :: vals(:)
+    
+  data => fson_parse("data.json")
+
+  call fson_get(data, "arr", vals)
+  print *, vals
+
+  call fson_destroy(data)
+  deallocate(vals)
+
+end program extract_array
+```
+
 JSON Path
 ---------
 
