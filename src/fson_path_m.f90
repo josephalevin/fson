@@ -39,8 +39,18 @@ module fson_path_m
         module procedure get_double
         module procedure get_logical
         module procedure get_chars
-        module procedure get_array
+        module procedure get_array_integer
     end interface fson_path_get
+
+    abstract interface
+       subroutine array_callback_func(element, i, count)
+         use fson_value_m
+         implicit none
+         type(fson_value), pointer,intent(in) :: element
+         integer, intent(in) :: i        ! index
+         integer, intent(in) :: count    ! size of array
+       end subroutine array_callback_func
+    end interface
 
 contains
     !
@@ -346,20 +356,13 @@ contains
     !
     
     subroutine get_array(this, path, array_callback)
-        type(fson_value), pointer :: this, p, element
-        character(len=*), optional :: path   
+        type(fson_value), pointer :: this
+        character(len=*), optional :: path
+        procedure(array_callback_func) :: array_callback
+
+        type(fson_value), pointer :: p, element
         integer :: index, count
-        
-        ! ELEMENT CALLBACK
-        interface
-            subroutine array_callback(element, index, count)
-                use fson_value_m
-                type(fson_value), pointer :: element
-                integer :: index, count
-            end subroutine array_callback
-        end interface
-        
-        
+                
         nullify(p)                
         
         ! resolve the path to the value
@@ -373,7 +376,6 @@ contains
             print *, "Unable to resolve path: ", path
             call exit(1)
         end if
-                
         
         if(p % value_type == TYPE_ARRAY) then            
             count = fson_value_count(p)
@@ -385,7 +387,34 @@ contains
             print *, "Resolved value is not an array. ", path
             call exit(1)
         end if
-        
+
+        if (associated(p)) nullify(p)
+
     end subroutine get_array
+
+!
+! GET ARRAY INTEGER
+!
+    subroutine get_array_integer(this, path, arr)
+
+      implicit none
+      type(fson_value), pointer, intent(in) :: this
+      character(len=*), intent(in), optional :: path   
+      integer, allocatable, intent(out) :: arr(:)
+
+      if (allocated(arr)) deallocate(arr)
+      call get_array(this, path, array_callback_integer)
+
+    contains
+
+      subroutine array_callback_integer(element, i, count)
+        implicit none
+        type(fson_value), pointer, intent(in) :: element
+        integer, intent(in) :: i, count
+        if (.not. allocated(arr)) allocate(arr(count))
+        call fson_path_get(element, "", arr(i))
+      end subroutine array_callback_integer
+
+    end subroutine get_array_integer
 
 end module fson_path_m
