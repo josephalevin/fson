@@ -42,16 +42,22 @@ contains
     implicit none
 
     real, parameter :: expected(7) = [-3.0, -2.1, -1.2, 0.0, 1.9, 2.8, 3.7]
+    real, parameter :: expected_2d(2,3) = &
+         transpose(reshape([2., -1., 5., -2.718, 3.142, 1.618], [3,2]))
     type(fson_value), pointer :: data
-    real, allocatable :: vals(:)
+    real, allocatable :: vals(:), vals2(:,:)
 
     data => fson_parse("test2.json")
 
     call fson_get(data, "array_real", vals)
     call assert_equals(expected, vals, size(expected), "test_array_real")
 
+    call fson_get(data, "array_real_2d", vals2)
+    call assert_equals(expected_2d, vals2, size(expected_2d,1), size(expected_2d,2), &
+         "test_array_real_2d")
+
     call fson_destroy(data)
-    deallocate(vals)
+    deallocate(vals, vals2)
 
   end subroutine test_array_real
 
