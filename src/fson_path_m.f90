@@ -544,12 +544,10 @@ contains
                   c = fson_value_count(element)
                   if (i1 == 1) then
                      count2 = c
-                  else
-                     if (c /= count2) then
-                        print *, "Resolved value has the wrong number of elements. ", &
-                             path, "[", i1, "]"
-                        call exit(1)
-                     end if
+                  else if (c /= count2) then
+                     print *, "Resolved value has the wrong number of elements. ", &
+                          path, "[", i1, "]"
+                     call exit(1)
                   end if
                   item => element % children
                   do i2 = 1, count2
