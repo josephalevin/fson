@@ -42,6 +42,7 @@ module fson_path_m
         module procedure get_array_1d_integer
         module procedure get_array_2d_integer
         module procedure get_array_1d_real
+        module procedure get_array_2d_real
         module procedure get_array_1d_double
         module procedure get_array_1d_logical
     end interface fson_path_get
@@ -582,5 +583,30 @@ contains
       end subroutine array_callback_2d_integer
 
     end subroutine get_array_2d_integer
+
+!
+! GET ARRAY REAL 2D
+!
+    subroutine get_array_2d_real(this, path, arr)
+
+      implicit none
+      type(fson_value), pointer, intent(in) :: this
+      character(len=*), intent(in), optional :: path   
+      real, allocatable, intent(out) :: arr(:, :)
+
+      if (allocated(arr)) deallocate(arr)
+      call get_array_2d(this, path, array_callback_2d_real)
+
+    contains
+
+      subroutine array_callback_2d_real(element, i1, i2, count1, count2)
+        implicit none
+        type(fson_value), pointer, intent(in) :: element
+        integer, intent(in) :: i1, i2, count1, count2
+        if (.not. allocated(arr)) allocate(arr(count1, count2))
+        call fson_path_get(element, "", arr(i1, i2))
+      end subroutine array_callback_2d_real
+
+    end subroutine get_array_2d_real
 
 end module fson_path_m
