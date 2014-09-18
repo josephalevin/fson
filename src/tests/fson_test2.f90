@@ -17,16 +17,21 @@ contains
     implicit none
 
     integer, parameter :: expected(5) = [7, 1, -2, 4, -10]
+    integer :: expected_2d(3,2) = transpose(reshape([1, 2, 3, 4, 5, 6], [2,3]))
     type(fson_value), pointer :: data
-    integer, allocatable :: vals(:)
+    integer, allocatable :: vals(:), vals2(:,:)
     
     data => fson_parse("test2.json")
 
-    call fson_get(data, "array2", vals)
+    call fson_get(data, "array_int", vals)
     call assert_equals(expected, vals, size(expected), "test_array_int")
 
+    call fson_get(data, "array_int_2d", vals2)
+    call assert_equals(expected_2d, vals2, size(expected_2d,1), size(expected_2d,2), &
+         "test_array_int_2d")
+
     call fson_destroy(data)
-    deallocate(vals)
+    deallocate(vals, vals2)
 
   end subroutine test_array_int
 
@@ -42,7 +47,7 @@ contains
 
     data => fson_parse("test2.json")
 
-    call fson_get(data, "array1", vals)
+    call fson_get(data, "array_real", vals)
     call assert_equals(expected, vals, size(expected), "test_array_real")
 
     call fson_destroy(data)
@@ -63,7 +68,7 @@ contains
 
     data => fson_parse("test2.json")
 
-    call fson_get(data, "array1", vals)
+    call fson_get(data, "array_real", vals)
     call assert_equals(expected, vals, size(expected), "test_array_double")
 
     call fson_destroy(data)
@@ -83,7 +88,7 @@ contains
 
     data => fson_parse("test2.json")
 
-    call fson_get(data, "array3", vals)
+    call fson_get(data, "array_logical", vals)
     call assert_equals(expected, vals, size(expected), "test_array_logical")
 
     call fson_destroy(data)
