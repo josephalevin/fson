@@ -44,17 +44,18 @@ contains
     real, parameter :: expected(7) = [-3.0, -2.1, -1.2, 0.0, 1.9, 2.8, 3.7]
     real, parameter :: expected_2d(2,3) = &
          transpose(reshape([2., -1., 5., -2.718, 3.142, 1.618], [3,2]))
+    real, parameter :: tol = 1.e-5
     type(fson_value), pointer :: data
     real, allocatable :: vals(:), vals2(:,:)
 
     data => fson_parse("test2.json")
 
     call fson_get(data, "array_real", vals)
-    call assert_equals(expected, vals, size(expected), "test_array_real")
+    call assert_equals(expected, vals, size(expected), tol, "test_array_real")
 
     call fson_get(data, "array_real_2d", vals2)
     call assert_equals(expected_2d, vals2, size(expected_2d,1), size(expected_2d,2), &
-         "test_array_real_2d")
+         tol, "test_array_real_2d")
 
     call fson_destroy(data)
     deallocate(vals, vals2)
@@ -69,13 +70,21 @@ contains
 
     real(dp), parameter :: expected(7) = &
          [-3.0_dp, -2.1_dp, -1.2_dp, 0.0_dp, 1.9_dp, 2.8_dp, 3.7_dp]
+    real(dp), parameter :: expected_2d(2,3) = &
+         transpose(reshape([ &
+         2._dp, -1._dp, 5._dp, -2.718_dp, 3.142_dp, 1.618_dp], [3,2]))
+    real(dp), parameter :: tol = 1.e-5_dp
     type(fson_value), pointer :: data
-    real(dp), allocatable :: vals(:)
+    real(dp), allocatable :: vals(:), vals2(:,:)
 
     data => fson_parse("test2.json")
 
     call fson_get(data, "array_real", vals)
-    call assert_equals(expected, vals, size(expected), "test_array_double")
+    call assert_equals(expected, vals, size(expected), tol, "test_array_double")
+
+    call fson_get(data, "array_real_2d", vals2)
+    call assert_equals(expected_2d, vals2, size(expected_2d,1), size(expected_2d,2), &
+         tol, "test_array_double_2d")
 
     call fson_destroy(data)
     deallocate(vals)
