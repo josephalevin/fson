@@ -87,7 +87,7 @@ contains
          tol, "test_array_double_2d")
 
     call fson_destroy(data)
-    deallocate(vals)
+    deallocate(vals, vals2)
 
   end subroutine test_array_double
 
@@ -98,16 +98,23 @@ contains
     implicit none
 
     logical, parameter :: expected(4) = [.true., .false., .true., .false.]
+    logical, parameter :: expected_2d(3,3) = transpose(reshape(&
+         [.true., .false., .true., .false., .true., .false., .true., .false., .true.],&
+         [3,3]))
     type(fson_value), pointer :: data
-    logical, allocatable :: vals(:)
+    logical, allocatable :: vals(:), vals2(:,:)
 
     data => fson_parse("test2.json")
 
     call fson_get(data, "array_logical", vals)
     call assert_equals(expected, vals, size(expected), "test_array_logical")
 
+    call fson_get(data, "array_logical_2d", vals2)
+    call assert_equals(expected_2d, vals2, size(expected_2d,1), size(expected_2d,2), &
+         "test_array_logical_2d")
+
     call fson_destroy(data)
-    deallocate(vals)
+    deallocate(vals, vals2)
 
   end subroutine test_array_logical
 
