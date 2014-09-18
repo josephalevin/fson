@@ -118,9 +118,9 @@ type = fax, number = 646555-4567
 
 Extracting arrays
 -----------------
-You can also extract entire arrays, as Fortran allocatable arrays, using fson_get(). This assumes the array's elements are all of the same type (integer, real, double precision, or logical).
+You can also extract entire arrays, as Fortran allocatable arrays, using fson_get(). This assumes the array's elements are all of the same type (integer, real, double precision, or logical). Rank-1 (vector) or rank-2 (matrix) arrays are supported.
 
-The following example parses a JSON file containing an array of real numbers called "arr", and prints the array:
+The following example parses a JSON file containing an vector of integers called "v" and a matrix of real numbers called "m", and prints them:
 
 ```fortran
 program extract_array
@@ -128,15 +128,18 @@ program extract_array
   use fson
   implicit none
   type(fson_value), pointer :: data
-  real, allocatable :: vals(:)
+  integer, allocatable :: vec(:)
+  real, allocatable :: mat(:,:)
     
   data => fson_parse("data.json")
 
-  call fson_get(data, "arr", vals)
-  print *, vals
+  call fson_get(data, "v", vec)
+  call fson_get(data, "m", mat)
+  print *, vec
+  print *, mat
 
   call fson_destroy(data)
-  deallocate(vals)
+  deallocate(vec, mat)
 
 end program extract_array
 ```
