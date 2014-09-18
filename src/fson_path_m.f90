@@ -520,7 +520,7 @@ contains
         procedure(array_callback_2d) :: array_callback
 
         type(fson_value), pointer :: p, element, item
-        integer :: i1, i2, count1, count2
+        integer :: i1, i2, count1, count2, c
                 
         nullify(p)                
         
@@ -541,7 +541,16 @@ contains
             element => p % children
             do i1 = 1, count1
                if (element % value_type == TYPE_ARRAY) then
-                  count2 = fson_value_count(element)
+                  c = fson_value_count(element)
+                  if (i1 == 1) then
+                     count2 = c
+                  else
+                     if (c /= count2) then
+                        print *, "Resolved value has the wrong number of elements. ", &
+                             path, "[", i1, "]"
+                        call exit(1)
+                     end if
+                  end if
                   item => element % children
                   do i2 = 1, count2
                      call array_callback(item, i1, i2, count1, count2)
@@ -550,6 +559,7 @@ contains
                   element => element % next
                else
                   print *, "Resolved value is not an array. ", path, "[", i1, "]"
+                  call exit(1)
                end if
             end do
         else
