@@ -1,18 +1,21 @@
 SRC=src
 DIST=dist
 BUILD=build
-TESTSDIR=tests
+TEST=tests
 
 F95=.f90
 OBJ=.o
+SO=.so
 EXE=
 
-LIBTARGET=$(DIST)/libfson.so
+LIBTARGET=$(DIST)/libfson$(SO)
 
 FC = gfortran
 FCFLAGS = -O2
 FMFLAGS = -J$(BUILD)
 LDFLAGS=
+FRUIT=-L$(HOME)/lib -lfruit
+FRUITINCLS=-I$(HOME)/include
 
 AR = ar
 ARFLAGS= r
@@ -30,6 +33,9 @@ json: $(patsubst $(SRC)%, $(DIST)%, $(JSON))
 FSON = fson_string_m fson_value_m fson_path_m fson
 OBJECTS = $(patsubst %, $(BUILD)/%$(OBJ), $(FSON))
 
+TESTS = fson_test fson_test2
+TESTOBJS = $(patsubst %, $(BUILD)/$(TEST)/%$(OBJ), $(TESTS))
+
 $(LIBTARGET) : $(OBJECTS)
 	mkdir -p `dirname $@`
 	$(AR) $(ARFLAGS) $@ $^
@@ -41,14 +47,14 @@ $(DIST)/%.json : $(SRC)/%.json
 	cp -f $< $@
 
 # build test program
-$(DIST)/$(TESTSDIR)/%$(EXE) : $(TESTOBJS) $(BUILD)/$(TESTSDIR)/%$(OBJ) $(LIBTARGET)
+$(DIST)/$(TEST)/%$(EXE) : $(BUILD)/$(TEST)/%$(OBJ) $(TESTOBJS) $(LIBTARGET)
 	mkdir -p `dirname $@`
-	$(FC) $(FCFLAGS) -I$(BUILD) -o $@ $^ $(LDFLAGS)
+	$(FC) $(FCFLAGS) -I$(BUILD) $(FRUIT) -o $@ $^ $(LDFLAGS)
 
 # build test objects
-$(BUILD)/$(TESTSDIR)/%$(OBJ): $(SRC)/$(TESTSDIR)/%$(F95)
+$(BUILD)/$(TEST)/%$(OBJ): $(SRC)/$(TEST)/%$(F95)
 	mkdir -p `dirname $@`
-	$(FC) $(FCFLAGS) $(FMFLAGS) -c $< -o $@
+	$(FC) $(FCFLAGS) $(FMFLAGS) $(FRUITINCLS) -c $< -o $@
 
 # build fson objects
 $(BUILD)/%$(OBJ): $(SRC)/%$(F95)
