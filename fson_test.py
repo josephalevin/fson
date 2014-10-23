@@ -17,6 +17,6 @@ if driver_source in test_sources: test_sources.remove(driver_source)
 build_command = 'make ' + output_dir + driver_name
 
 suite = test_suite(test_sources)
-if suite.build_run(driver_source, build_command, output_dir = output_dir):
-    suite.summary()
+suite.build_run(driver_source, build_command, output_dir = output_dir)
+if suite.built: suite.summary()
 else: print 'Failed to build/run tests'
