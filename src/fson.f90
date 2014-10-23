@@ -116,17 +116,8 @@ contains
         logical :: eof
         character :: c
 
-        ! for some unknown reason the next pointer is getting messed with the pop
-        type(fson_value), pointer :: hack
-
-        ! start the hack                  
-        hack => value % next
-
         ! pop the next non whitespace character off the file
         c = pop_char(unit, str, eof = eof, skip_ws = .true.)
-
-        ! finish the hack; set the next pointer to whatever it was before the pop
-        value % next => hack
 
         if (eof) then
             return
