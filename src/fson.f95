@@ -258,21 +258,27 @@ contains
         integer, intent(inout) :: unit
         type(fson_string), pointer :: string
 
-        logical :: eof
-        character :: c, last
+        logical :: eof,escape
+        character :: c
 
         string => fson_string_create()
-
+        escape = .false.
         do
             c = pop_char(unit, eof = eof, skip_ws = .false.)
             if (eof) then
                 print *, "Expecting end of string"
-                call exit(1)!
-            else if ('"' == c .and. last .ne. '\') then
-                exit
+                call exit(1)
+            else if (escape) then
+               call fson_string_append(string,c)
+               escape = .false.
             else
-                last = c
-                call fson_string_append(string, c)
+                if(c == '\')then
+                    escape = .true.
+                else if (c == '"')then
+                    exit
+                else
+                    call fson_string_append(string,c)
+                endif
             end if
         end do
     end function parse_string
