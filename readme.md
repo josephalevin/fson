@@ -7,7 +7,7 @@ Getting Started
 program example1
 
     ! Typical usage should only require an explicit use of the fson module.
-    ! The other modules will be used privatley by fson as required.  
+    ! The other modules will be used privately by fson as required.  
     use fson
 
     ! declare a pointer variable.  Always use a pointer with fson_value.
