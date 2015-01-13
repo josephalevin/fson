@@ -224,7 +224,7 @@ contains
     !
     ! PARSE ARRAY
     !    
-    subroutine parse_array(unit, str, array)
+    recursive subroutine parse_array(unit, str, array)
 
       implicit none
       integer, intent(inout) :: unit
