@@ -41,7 +41,7 @@ contains
 
     implicit none
 
-    real, parameter :: expected(7) = [-3.0, -2.1, -1.2, 0.0, 1.9, 2.8, 3.7]
+    real, parameter :: expected(7) = [-3.0, -2.1, -1.2, 0.0, 1.9, 1.0E-01, 1.0E+01]
     real, parameter :: expected_2d(2,3) = &
          transpose(reshape([2., -1., 5., -2.718, 3.142, 1.618], [3,2]))
     real, parameter :: tol = 1.e-5
@@ -69,7 +69,7 @@ contains
     implicit none
 
     real(dp), parameter :: expected(7) = &
-         [-3.0_dp, -2.1_dp, -1.2_dp, 0.0_dp, 1.9_dp, 2.8_dp, 3.7_dp]
+         [-3.0_dp, -2.1_dp, -1.2_dp, 0.0_dp, 1.9_dp, 0.1_dp, 10.0_dp]
     real(dp), parameter :: expected_2d(2,3) = &
          transpose(reshape([ &
          2._dp, -1._dp, 5._dp, -2.718_dp, 3.142_dp, 1.618_dp], [3,2]))
