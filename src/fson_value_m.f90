@@ -53,10 +53,13 @@ module fson_value_m
         logical :: value_logical
         integer :: value_integer
         real :: value_real
+        double precision :: value_double
+        integer, private :: count = 0
         type(fson_string), pointer :: value_string => null()
         type(fson_value), pointer :: next => null()
         type(fson_value), pointer :: parent => null()
         type(fson_value), pointer :: children => null()
+        type(fson_value), pointer :: tail => null()
     end type fson_value
 
     !
@@ -77,6 +80,7 @@ contains
     function fson_value_create() result(new)
         type(fson_value), pointer :: new
 
+        nullify(new)
         allocate(new)
 
     end function fson_value_create
@@ -84,59 +88,84 @@ contains
     !
     ! FSON VALUE DESTROY
     !
-    recursive subroutine fson_value_destroy(this)
-        type(fson_value), pointer :: this
-        
-        if(associated(this % children)) then
-            call fson_value_destroy(this % children)
-            nullify(this % children)
-        end if
-        
-        if(associated(this % next)) then
-            call fson_value_destroy(this % next)
-            nullify (this % next)
-        end if
-        
-        if(associated(this % name)) then
+    recursive subroutine fson_value_destroy(this, destroy_next)
+
+      implicit none
+      type(fson_value), pointer :: this
+      logical, intent(in), optional :: destroy_next
+
+      type(fson_value), pointer :: p
+      integer :: count
+      logical :: donext
+
+      if (present(destroy_next)) then
+         donext = destroy_next
+      else
+         donext = .true.
+      end if
+
+      if (associated(this)) then
+
+         if(associated(this % name)) then
             call fson_string_destroy(this % name)
             nullify (this % name)
-        end if
-        
-        if(associated(this % value_string)) then
+         end if
+
+         if(associated(this % value_string)) then
             call fson_string_destroy(this % value_string)
             nullify (this % value_string)
-        end if
-        
-        nullify(this)
-                
+         end if
+
+         if(associated(this % children)) then
+            do while (this % count > 0)
+               p => this % children
+               this % children => this % children % next
+               this % count = this % count - 1
+               call fson_value_destroy(p, .false.)
+            end do
+            nullify(this % children)
+         end if
+
+         if ((associated(this % next)) .and. (donext)) then
+            call fson_value_destroy(this % next)
+            nullify (this % next)
+         end if
+
+         if(associated(this % tail)) then
+            nullify (this % tail)
+         end if
+
+         deallocate(this)
+         nullify(this)
+
+      end if
 
     end subroutine fson_value_destroy
 
     !
     ! FSON VALUE ADD
     !
-    ! Adds the memeber to the linked list
+    ! Adds the member to the linked list
+
     subroutine fson_value_add(this, member)
-        type(fson_value), pointer :: this, member, p
-        character(len = 100) :: tmp
 
-        ! associate the parent
-        member % parent => this
-        
-        ! add to linked list
-        if (associated(this % children)) then
-            ! get to the tail of the linked list  
-            p => this % children
-            do while (associated(p % next))
-                p => p % next
-            end do
+      implicit none
+      type(fson_value), pointer :: this, member
 
-            p % next => member
-        else
-            this % children => member
-        end if                
+      ! associate the parent
+      member % parent => this
 
-    end subroutine
+      ! add to linked list
+      if (associated(this % children)) then
+         this % tail % next => member
+      else
+         this % children => member
+      end if
+
+      this % tail => member
+      this % count = this % count + 1
+
+    end subroutine fson_value_add
 
     !
     ! FSON_VALUE_COUNT
@@ -144,14 +173,7 @@ contains
     integer function fson_value_count(this) result(count)
         type(fson_value), pointer :: this, p
 
-        count = 0
-
-        p => this % children
-
-        do while (associated(p))
-            count = count + 1
-            p => p % next
-        end do
+        count = this % count
 
     end function
 
@@ -184,6 +206,8 @@ contains
         string => fson_string_create(name)
         
         p => get_by_name_string(this, string)
+
+        call fson_string_destroy(string)
         
     end function get_by_name_chars
     
@@ -278,7 +302,7 @@ contains
         case (TYPE_INTEGER)
             print *, repeat(" ", spaces), this % value_integer
         case (TYPE_REAL)
-            print *, repeat(" ", spaces), this % value_real
+            print *, repeat(" ", spaces), this % value_double
         end select
     end subroutine fson_value_print
        

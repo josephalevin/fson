@@ -55,19 +55,21 @@ contains
     !
     ! FSON PARSE
     !
-    function fson_parse(file, unit) result(p)
+    function fson_parse(file, unit, str) result(p)
         type(fson_value), pointer :: p
         integer, optional, intent(inout) :: unit
-        character(len = *), intent(in) :: file
+        character(len = *), optional, intent(in) :: file
+        character(len = *), optional, intent(in) :: str
+        character(len=:),allocatable :: strBuffer
         logical :: unit_available
         integer :: u
         ! init the pointer to null
         nullify(p)
 
         ! select the file unit to use
-        if (present(unit)) then
+        if (present(unit) .and. present(file)) then
             u = unit
-        else
+        elseif (present(file)) then
             ! find the first available unit
             unit_available = .false.
             u = 20
@@ -76,44 +78,46 @@ contains
                 inquire(unit = u, exist = unit_available)
                 u = u + 1
             end do
+        elseif (present(str)) then
+            strBuffer = str
+            u = 0
+        else 
+            print *, "ERROR: Need a file or a string"
+            call exit (1)
         end if
 
         ! open the file
-        open (unit = u, file = file, status = "old", action = "read", form = "formatted", position = "rewind")
+        if (present(file)) then
+            open (unit = u, file = file, status = "old", action = "read", form = "formatted", position = "rewind")
+        end if
 
         ! create the value and associate the pointer        
         p => fson_value_create()
 
         ! parse as a value
-        call parse_value(unit = u, value = p)
+        call parse_value(unit = u, value = p, str = strBuffer)
 
         ! close the file
         if( .not. present(unit)) then
             close (u)
         end if
 
+        if(allocated(strBuffer)) deallocate(strBuffer)
+
     end function fson_parse
 
     !
     ! PARSE_VALUE
     !
-    recursive subroutine parse_value(unit, value)
+    recursive subroutine parse_value(unit, str, value)
         integer, intent(inout) :: unit
+        character(*), intent(inout) :: str
         type(fson_value), pointer :: value
         logical :: eof
         character :: c
 
-        ! for some unknown reason the next pointer is getting messed with the pop
-        type(fson_value), pointer :: hack
-
-        ! start the hack                  
-        hack => value % next
-
         ! pop the next non whitespace character off the file
-        c = pop_char(unit, eof = eof, skip_ws = .true.)
-
-        ! finish the hack; set the next pointer to whatever it was before the pop
-        value % next => hack
+        c = pop_char(unit, str, eof = eof, skip_ws = .true.)
 
         if (eof) then
             return
@@ -122,34 +126,35 @@ contains
             case ("{")
                 ! start object                
                 value % value_type = TYPE_OBJECT
-                call parse_object(unit, value)
+                call parse_object(unit, str, value)
             case ("[")
                 ! start array
                 value % value_type = TYPE_ARRAY
-                call parse_array(unit, value)
+                call parse_array(unit, str, value)
             case ("]")
                 ! end an empty array
-                nullify(value)
+               call push_char(c)
+               nullify(value)
             case ('"')
                 ! string                                      
                 value % value_type = TYPE_STRING
-                value % value_string => parse_string(unit)
+                value % value_string => parse_string(unit, str)
             case ("t")
                 !true
                 value % value_type = TYPE_LOGICAL
-                call parse_for_chars(unit, "rue")
+                call parse_for_chars(unit, str, "rue")
                 value % value_logical = .true.
             case ("f")
                 !false
                 value % value_type = TYPE_LOGICAL
                 value % value_logical = .false.
-                call parse_for_chars(unit, "alse")
+                call parse_for_chars(unit, str, "alse")
             case ("n")
                 value % value_type = TYPE_NULL
-                call parse_for_chars(unit, "ull")
+                call parse_for_chars(unit, str, "ull")
             case("-", "0": "9")
                 call push_char(c)
-                call parse_number(unit, value)
+                call parse_number(unit, str, value)
             case default
                 print *, "ERROR: Unexpected character while parsing value. '", c, "' ASCII=", iachar(c)
                 call exit (1)
@@ -161,8 +166,9 @@ contains
     !
     ! PARSE OBJECT
     !    
-    recursive subroutine parse_object(unit, parent)
+    recursive subroutine parse_object(unit, str, parent)
         integer, intent(inout) :: unit
+        character(*), intent(inout) :: str
         type(fson_value), pointer :: parent, pair
 
 
@@ -170,7 +176,7 @@ contains
         character :: c
 
         ! pair name
-        c = pop_char(unit, eof = eof, skip_ws = .true.)
+        c = pop_char(unit, str, eof = eof, skip_ws = .true.)
         if (eof) then
             print *, "ERROR: Unexpected end of file while parsing start of object."
             call exit (1)
@@ -179,20 +185,20 @@ contains
             return
         else if ('"' == c) then
             pair => fson_value_create()
-            pair % name => parse_string(unit)
+            pair % name => parse_string(unit, str)
         else
             print *, "ERROR: Expecting string: '", c, "'"
             call exit (1)
         end if
 
         ! pair value
-        c = pop_char(unit, eof = eof, skip_ws = .true.)
+        c = pop_char(unit, str, eof = eof, skip_ws = .true.)
         if (eof) then
             print *, "ERROR: Unexpected end of file while parsing object member. 1"
             call exit (1)
         else if (":" == c) then
             ! parse the value                       
-            call parse_value(unit, pair)
+            call parse_value(unit, str, pair)
             call fson_value_add(parent, pair)
         else
             print *, "ERROR: Expecting : and then a value. ", c
@@ -200,12 +206,12 @@ contains
         end if
 
         ! another possible pair
-        c = pop_char(unit, eof = eof, skip_ws = .true.)
+        c = pop_char(unit, str, eof = eof, skip_ws = .true.)
         if (eof) then
             return
         else if ("," == c) then
             ! read the next member            
-            call parse_object(unit = unit, parent = parent)
+            call parse_object(unit = unit, str=str, parent = parent)
         else if ("}" == c) then
             return
         else
@@ -218,44 +224,48 @@ contains
     !
     ! PARSE ARRAY
     !    
-    recursive subroutine parse_array(unit, array)
-        integer, intent(inout) :: unit
-        type(fson_value), pointer :: array, element
+    recursive subroutine parse_array(unit, str, array)
 
-        logical :: eof
-        character :: c
+      implicit none
+      integer, intent(inout) :: unit
+      character(*), intent(inout) :: str
+      type(fson_value), pointer :: array, element
 
+      logical :: eof, finished
+      character :: c
 
-        ! try to parse an element value
-        element => fson_value_create()
-        call parse_value(unit, element)
+      finished = .false.
+      do while (.not. finished)
 
-        ! parse value will disassociate an empty array value
-        if (associated(element)) then
+         ! try to parse an element value
+         element => fson_value_create()
+         call parse_value(unit, str, element)
+
+         ! parse value will disassociate an empty array value
+         if (associated(element)) then
             call fson_value_add(array, element)
-        end if
+         end if
 
+         ! pop the next character
+         c = pop_char(unit, str, eof = eof, skip_ws = .true.)
 
-        ! popped the next character
-        c = pop_char(unit, eof = eof, skip_ws = .true.)
-
-        if (eof) then
-            return
-        else if ("," == c) then
-            ! parse the next element
-            call parse_array(unit, array)
-        else if ("]" == c) then
+         if (eof) then
+            finished = .true.
+         else if ("]" == c) then
             ! end of array
-            return
-        end if
+            finished = .true.
+         end if
+
+      end do
 
     end subroutine parse_array
 
     !
     ! PARSE STRING
     !
-    function parse_string(unit) result(string)
+    function parse_string(unit, str) result(string)
         integer, intent(inout) :: unit
+        character(*), intent(inout) :: str
         type(fson_string), pointer :: string
 
         logical :: eof
@@ -264,10 +274,10 @@ contains
         string => fson_string_create()
 
         do
-            c = pop_char(unit, eof = eof, skip_ws = .false.)
+            c = pop_char(unit, str, eof = eof, skip_ws = .false.)
             if (eof) then
                 print *, "Expecting end of string"
-                call exit(1)!
+                call exit(1)
             else if ('"' == c .and. last .ne. '\') then
                 exit
             else
@@ -280,8 +290,9 @@ contains
     !
     ! PARSE FOR CHARACTERS
     !
-    subroutine parse_for_chars(unit, chars)
+    subroutine parse_for_chars(unit, str, chars)
         integer, intent(in) :: unit
+        character(*), intent(inout) :: str
         character(len = *), intent(in) :: chars
         integer :: i, length
         logical :: eof
@@ -290,7 +301,7 @@ contains
         length = len_trim(chars)
 
         do i = 1, length
-            c = pop_char(unit, eof = eof, skip_ws = .true.)
+            c = pop_char(unit, str, eof = eof, skip_ws = .true.)
             if (eof) then
                 print *, "ERROR: Unexpected end of file while parsing array."
                 call exit (1)
@@ -305,17 +316,18 @@ contains
     !
     ! PARSE NUMBER
     !
-    subroutine parse_number(unit, value)
+    subroutine parse_number(unit, str, value)
         integer, intent(inout) :: unit
+        character(*), intent(inout) :: str
         type(fson_value), pointer :: value
         logical :: eof, negative, decimal, scientific
         character :: c
         integer :: integral, exp, digit_count
-        real :: frac
+        double precision :: frac
 
 
         ! first character is either - or a digit        
-        c = pop_char(unit, eof = eof, skip_ws = .true.)
+        c = pop_char(unit, str, eof = eof, skip_ws = .true.)
         if (eof) then
             print *, "ERROR: Unexpected end of file while parsing number."
             call exit (1)
@@ -328,14 +340,14 @@ contains
 
 
         ! parse the integral
-        integral = parse_integer(unit)
+        integral = parse_integer(unit, str)
 
         decimal = .false.
         scientific = .false.
 
         do
             ! first character is either - or a digit        
-            c = pop_char(unit, eof = eof, skip_ws = .true.)
+            c = pop_char(unit, str, eof = eof, skip_ws = .true.)
             if (eof) then
                 print *, "ERROR: Unexpected end of file while parsing number."
                 call exit (1)
@@ -349,8 +361,8 @@ contains
                         call exit(1)
                     end if
                     decimal = .true.
-                    frac = parse_integer(unit, digit_count)
-                    frac = frac / (10 ** digit_count)
+                    frac = parse_integer(unit, str, digit_count)
+                    frac = frac / (10.0d0 ** digit_count)
                 case ("e", "E")
                     ! this is already an exponent number
                     if (scientific) then
@@ -360,7 +372,7 @@ contains
                     end if
                     scientific = .true.
                     ! this number has an exponent
-                    exp = parse_integer(unit)
+                    exp = parse_integer(unit, str)
 
                 case default
                     ! this is a integer
@@ -371,7 +383,7 @@ contains
 
                         if (scientific) then
                             ! apply exponent
-                            frac = frac * (10 ** exp)
+                            frac = frac * (10.0d0 ** exp)
                         end if
 
                         ! apply negative
@@ -379,13 +391,14 @@ contains
                             frac = frac * (-1)
                         end if
 
-
                         value % value_type = TYPE_REAL
                         value % value_real = frac
+                        value % value_double = frac
+
                     else
                         if (scientific) then
                         ! apply exponent
-                        integral = integral * (10 ** exp)
+                        integral = integral * (10.0d0 ** exp)
                         end if
 
                         ! apply negative
@@ -409,39 +422,64 @@ contains
     !
     ! PARSE INTEGER    
     !
-    integer function parse_integer(unit, digit_count) result(integral)
+    integer(kind=8) function parse_integer(unit, str, digit_count) result(integral)
         integer, intent(in) :: unit
+        character(*), intent(inout) :: str
         integer, optional, intent(inout) :: digit_count
-        logical :: eof
+        logical :: eof, found_sign, found_digit
         character :: c
-        integer :: tmp, count
+        integer :: tmp, icount, isign
+        integer, parameter :: max_integer_length = 18
 
-        count = 0
+
+        icount = 0
         integral = 0
+        isign = 1
+        found_sign = .false.
+        found_digit = .false.
         do
-            c = pop_char(unit, eof = eof, skip_ws = .true.)
+            c = pop_char(unit, str, eof = eof, skip_ws = .true.)
             if (eof) then
                 print *, "ERROR: Unexpected end of file while parsing digit."
                 call exit (1)
             else
                 select case(c)
+                case ("+")
+                    if (found_sign.or.found_digit) then
+                        print *, "ERROR: Miss formatted number."
+                        call exit(1)
+                    end if
+                    found_sign = .true.
+                case ("-")
+                    if (found_sign.or.found_digit) then
+                        print *, "ERROR: Miss formatted number."
+                        call exit(1)
+                    end if
+                    found_sign = .true.
+                    isign = -1
                 case ("0":"9")
+                    found_sign = .true.
+                    if (icount > max_integer_length) then
+                        print *, "ERROR: Too many digits for an integer."
+                        call exit(1)
+                    end if
                     ! digit        
                     read (c, '(i1)') tmp
                     ! shift
-                    if (count > 0) then
+                    if (icount > 0) then
                         integral = integral * 10
                     end if
                     ! add
                     integral = integral + tmp
 
-                    ! increase the count
-                    count = count + 1
+                    ! increase the icount
+                    icount = icount + 1
                 case default
                     if (present(digit_count)) then
-                        digit_count = count
+                        digit_count = icount
                     end if
                     call push_char(c)
+                    integral = isign * integral
                     return
                 end select
             end if
@@ -452,8 +490,9 @@ contains
     !
     ! POP CHAR
     !
-    recursive character function pop_char(unit, eof, skip_ws) result(popped)
+    recursive character function pop_char(unit, str, eof, skip_ws) result(popped)
         integer, intent(in) :: unit
+        character(*), intent(inout) :: str
         logical, intent(out) :: eof
         logical, intent(in), optional :: skip_ws
 
@@ -473,15 +512,21 @@ contains
                 ! there is a character pushed back on, most likely from the number parsing                
                 c = pushed_char(pushed_index:pushed_index)
                 pushed_index = pushed_index - 1
+                ios = 0
             else
-                read (unit = unit, fmt = "(a)", advance = "no", iostat = ios) c
+                if (unit .gt. 0) then
+                    read (unit = unit, fmt = "(a)", advance = "no", iostat = ios) c
+                else
+                    read (unit = str, fmt = "(a)", iostat = ios) c
+                    str = str(2:)
+                endif
             end if
             if (ios == end_of_record) then
                 cycle            
             else if (ios == end_of_file) then
                 eof = .true.
                 exit
-            else if (iachar(c) <= 32) then
+            else if (iachar(c) <= 31) then
                 ! non printing ascii characters
                 cycle
             else if (ignore .and. c == " ") then

@@ -1,0 +1,13 @@
+{
+    "dict1": {"int": -3,
+	      "real": 2.718281828459,
+	      "logical": true,
+	      "string": "Hello world"
+	     },
+    "array_real": [-3.0, -2.1, -1.2, 0.0, 1.9, 2.8, 3.7],
+    "array_int": [7, 1, -2 , 4, -10],
+    "array_logical": [true, false, true, false],
+    "array_int_2d": [[1, 2], [3, 4], [5, 6]],
+    "array_real_2d": [[2., -1., 5.], [-2.718, 3.142, 1.618]],
+    "array_logical_2d": [[true, false, true], [false, true, false], [true, false, true]]
+}
