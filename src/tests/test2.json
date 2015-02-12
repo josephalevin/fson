@@ -9,5 +9,6 @@
     "array_logical": [true, false, true, false],
     "array_int_2d": [[1, 2], [3, 4], [5, 6]],
     "array_real_2d": [[2., -1., 5.], [-2.718, 3.142, 1.618]],
-    "array_logical_2d": [[true, false, true], [false, true, false], [true, false, true]]
+    "array_logical_2d": [[true, false, true], [false, true, false], [true, false, true]],
+    "empty_string": ""
 }

@@ -167,4 +167,17 @@ contains
 
 !------------------------------------------------------------------------
 
+  subroutine test_empty_string()
+
+    type(fson_value), pointer :: data
+    character(len = 1) :: str
+    
+    data => fson_parse("test2.json")
+    call fson_get(data, "empty_string", str)
+    call assert_equals("", str, "empty string")
+
+    call fson_destroy(data)
+
+  end subroutine test_empty_string
+
 end module fson_test2
