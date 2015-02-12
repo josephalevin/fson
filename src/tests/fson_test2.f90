@@ -180,4 +180,21 @@ contains
 
   end subroutine test_empty_string
 
+!------------------------------------------------------------------------
+
+  subroutine test_escape_string()
+
+    type(fson_value), pointer :: data
+    character(len = 1) :: str
+    
+    data => fson_parse("test2.json")
+    call fson_get(data, "escape_string", str)
+    call assert_equals("\", str, "escape string")
+
+    call fson_destroy(data)
+
+  end subroutine test_escape_string
+
+!------------------------------------------------------------------------
+
 end module fson_test2
