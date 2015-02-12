@@ -16,7 +16,6 @@ LIBTARGET=$(DIST)/libfson$(SO)
 
 FC = gfortran
 FCFLAGS = -O2
-FMFLAGS = -J$(BUILD)
 LDFLAGS=
 FRUIT=-L$(LIB_DIR) -lfruit
 FRUITINCLS=-I$(INCL_DIR)
@@ -61,12 +60,12 @@ $(BUILD)/$(TEST)/$(TESTPROG)$(OBJ): $(TESTOBJS)
 # build test objects
 $(BUILD)/$(TEST)/%$(OBJ): $(SRC)/$(TEST)/%$(F95)
 	mkdir -p `dirname $@`
-	$(FC) $(FCFLAGS) $(FMFLAGS) $(FRUITINCLS) -c $< -o $@
+	$(FC) $(FCFLAGS) $(FRUITINCLS) -J$(BUILD)/$(TEST) -c $< -o $@
 
 # build fson objects
 $(BUILD)/%$(OBJ): $(SRC)/%$(F95)
 	mkdir -p `dirname $@`
-	$(FC) $(FCFLAGS) $(FMFLAGS) -c $< -o $@
+	$(FC) $(FCFLAGS) -J$(BUILD) -c $< -o $@
 
 $(DIST)/%$(EXE) : $(BUILD)/%$(OBJ) $(OBJECTS)
 	mkdir -p `dirname $@`
