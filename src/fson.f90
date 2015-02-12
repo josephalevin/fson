@@ -269,7 +269,7 @@ contains
         type(fson_string), pointer :: string
 
         logical :: eof
-        character :: c, last
+        character :: c, last = " "
 
         string => fson_string_create()
 
