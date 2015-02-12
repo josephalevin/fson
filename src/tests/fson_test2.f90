@@ -127,9 +127,12 @@ contains
     integer :: count, val_int
     integer, parameter :: expected_count = 4, expected_val_int = -3
     real, parameter :: expected_val_real = 2.718281828459
+    double precision, parameter :: expected_val_double = expected_val_real
+    double precision, parameter :: double_tol = 1.e-07
     logical, parameter :: expected_val_logical = .true.
     character(len = 11), parameter :: expected_val_string = "Hello world"
     real :: val_real
+    double precision :: val_double
     logical :: val_logical
     character(len = len(expected_val_string)) :: val_string
 
@@ -147,6 +150,8 @@ contains
     item => fson_value_get(dict, "real")
     call fson_get(item, "", val_real)
     call assert_equals(expected_val_real, val_real, "dict value real")
+    call fson_get(item, "", val_double)
+    call assert_equals(expected_val_double, val_double, double_tol, "dict value double")
 
     item => fson_value_get(dict, "logical")
     call fson_get(item, "", val_logical)
