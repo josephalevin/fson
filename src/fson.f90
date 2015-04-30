@@ -380,6 +380,9 @@ contains
                     scientific = .true.
                     ! this number has an exponent
                     exp = parse_integer(unit, str)
+                    if (exp < 0) then
+                       decimal = .true.
+                    end if
 
                 case default
                     ! this is a integer
