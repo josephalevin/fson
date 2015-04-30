@@ -186,7 +186,7 @@ contains
 
     type(fson_value), pointer :: data
     character(len = 1) :: str
-    
+
     data => fson_parse("test2.json")
     call fson_get(data, "escape_string", str)
     call assert_equals("\", str, "escape string")
@@ -194,6 +194,25 @@ contains
     call fson_destroy(data)
 
   end subroutine test_escape_string
+
+!------------------------------------------------------------------------
+
+  subroutine test_integer_mantissa_exponent()
+
+    type(fson_value), pointer :: data
+    real :: x
+    real, parameter :: expected_positive = 2.e3
+    real, parameter :: expected_negative = 2.e-3
+
+    data => fson_parse("test2.json")
+    call fson_get(data, "integer_mantissa_positive_exponent", x)
+    call assert_equals(expected_positive, x, "integer mantissa positive exponent")
+    call fson_get(data, "integer_mantissa_negative_exponent", x)
+    call assert_equals(expected_negative, x, "integer mantissa negative exponent")
+
+    call fson_destroy(data)
+
+  end subroutine test_integer_mantissa_exponent
 
 !------------------------------------------------------------------------
 
