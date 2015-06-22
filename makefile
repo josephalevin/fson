@@ -20,9 +20,6 @@ LDFLAGS=
 FRUIT=-L$(LIB_DIR) -lfruit
 FRUITINCLS=-I$(INCL_DIR)
 
-AR = ar
-ARFLAGS= r
-
 # "make" builds all
 all: lib examples
 
@@ -41,7 +38,7 @@ TESTOBJS = $(patsubst %, $(BUILD)/$(TEST)/%$(OBJ), $(TESTS))
 
 $(LIBTARGET) : $(OBJECTS)
 	mkdir -p `dirname $@`
-	$(AR) $(ARFLAGS) $@ $^
+	$(FC) -shared -o $(LIBTARGET) $^
 
 lib: $(LIBTARGET)
 
@@ -65,7 +62,7 @@ $(BUILD)/$(TEST)/%$(OBJ): $(SRC)/$(TEST)/%$(F95)
 # build fson objects
 $(BUILD)/%$(OBJ): $(SRC)/%$(F95)
 	mkdir -p `dirname $@`
-	$(FC) $(FCFLAGS) -J$(BUILD) -c $< -o $@
+	$(FC) $(FCFLAGS) -fpic -J$(BUILD) -c $< -o $@
 
 $(DIST)/%$(EXE) : $(BUILD)/%$(OBJ) $(OBJECTS)
 	mkdir -p `dirname $@`
