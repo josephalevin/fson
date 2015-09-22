@@ -13,5 +13,6 @@
     "empty_string": "",
     "escape_string": "\\",
     "integer_mantissa_positive_exponent": 2e3,
-    "integer_mantissa_negative_exponent": 2e-3
+    "integer_mantissa_negative_exponent": 2e-3,
+    "long_integral_double": 10000000000.
 }

@@ -216,4 +216,18 @@ contains
 
 !------------------------------------------------------------------------
 
+  subroutine test_long_integral_double()
+
+    type(fson_value), pointer :: data
+    real(dp) :: x
+    real(dp), parameter :: expected = 1.e10_dp, tol = 1.e-3_dp
+
+    data => fson_parse("test2.json")
+    call fson_get(data, "long_integral_double", x)
+    call assert_equals(expected, x, tol, "long integral double")
+
+  end subroutine test_long_integral_double
+
+!------------------------------------------------------------------------
+
 end module fson_test2

@@ -329,7 +329,8 @@ contains
         type(fson_value), pointer :: value
         logical :: eof, negative, decimal, scientific
         character :: c
-        integer :: integral, exp, digit_count
+        integer :: exp, digit_count
+        integer(kind=8) :: integral
         double precision :: frac
 
 
