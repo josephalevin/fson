@@ -48,6 +48,7 @@ module fson_path_m
         module procedure get_array_1d_logical
         module procedure get_array_2d_logical
         module procedure get_array_1d_char
+        module procedure get_array_2d_char
     end interface fson_path_get
 
     abstract interface
@@ -697,5 +698,30 @@ contains
 
     end subroutine get_array_2d_logical
 
+!
+! GET ARRAY CHAR 2D
+!
+    subroutine get_array_2d_char(this, path, arr, str_len)
+
+      implicit none
+      type(fson_value), pointer, intent(in) :: this
+      character(len=*), intent(in), optional :: path
+      integer, intent(in) :: str_len
+      character(len = str_len), allocatable, intent(out) :: arr(:, :)
+
+      if (allocated(arr)) deallocate(arr)
+      call get_array_2d(this, path, array_callback_2d_char)
+
+    contains
+
+      subroutine array_callback_2d_char(element, i1, i2, count1, count2)
+        implicit none
+        type(fson_value), pointer, intent(in) :: element
+        integer, intent(in) :: i1, i2, count1, count2
+        if (.not. allocated(arr)) allocate(arr(count1, count2))
+        call fson_path_get(element, "", arr(i1, i2))
+      end subroutine array_callback_2d_char
+
+    end subroutine get_array_2d_char
 
 end module fson_path_m

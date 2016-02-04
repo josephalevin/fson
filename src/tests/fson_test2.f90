@@ -226,6 +226,8 @@ contains
     call fson_get(data, "long_integral_double", x)
     call assert_equals(expected, x, tol, "long integral double")
 
+    call fson_destroy(data)
+
   end subroutine test_long_integral_double
 
 !------------------------------------------------------------------------
@@ -233,17 +235,32 @@ contains
   subroutine test_char_array()
 
     type(fson_value), pointer :: data
-    integer :: i
-    integer, parameter :: expected_array_length = 3, string_length = 5
-    character(len = string_length), allocatable :: x(:)
-    character(len = string_length), parameter :: expected(expected_array_length) = &
+    integer :: i, j
+    integer, parameter :: string_length = 5
+    integer, parameter :: count1 = 3, count21 = 2, count22 = 3
+    character(len = string_length), allocatable :: x1(:), x2(:, :)
+    character(len = string_length), parameter :: expected1(count1) = &
          ["alpha", "beta ", "foo  "]
-
+    character(len = string_length), parameter :: expected2(count21, &
+         count22) = transpose(reshape( &
+         ["alpha", "beta ", "gamma", "foo  ", "bar  ", "fubar"], &
+         [count22, count21]))
+    
     data => fson_parse("test2.json")
-    call fson_get(data, "char_array", x, string_length)
-    do i = 1, expected_array_length
-       call assert_equals(expected(i), x(i), "char array")
+
+    call fson_get(data, "char_array", x1, string_length)
+    do i = 1, count1
+       call assert_equals(expected1(i), x1(i), "1d char array")
     end do
+
+    call fson_get(data, "char_array2", x2, string_length)
+    do i = 1, count21
+       do j = 1, count22
+          call assert_equals(expected2(i,j), x2(i,j), "2d char array")
+       end do
+    end do
+
+    call fson_destroy(data)
 
   end subroutine test_char_array
 
