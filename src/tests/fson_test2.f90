@@ -230,4 +230,24 @@ contains
 
 !------------------------------------------------------------------------
 
+  subroutine test_char_array()
+
+    type(fson_value), pointer :: data
+    integer :: i
+    integer, parameter :: expected_array_length = 3, string_length = 5
+    character(len = string_length), allocatable :: x(:)
+    character(len = string_length), parameter :: expected(expected_array_length) = &
+         ["alpha", "beta ", "foo  "]
+
+    data => fson_parse("test2.json")
+    call fson_get(data, "char_array", x, string_length)
+    do i = 1, expected_array_length
+       call assert_equals(expected(i), x(i), "char array")
+    end do
+
+  end subroutine test_char_array
+
+!------------------------------------------------------------------------
+
+
 end module fson_test2
