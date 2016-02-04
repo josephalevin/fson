@@ -248,12 +248,12 @@ contains
     
     data => fson_parse("test2.json")
 
-    call fson_get(data, "char_array", x1, string_length)
+    call fson_get(data, "char_array", x1)
     do i = 1, count1
        call assert_equals(expected1(i), x1(i), "1d char array")
     end do
 
-    call fson_get(data, "char_array2", x2, string_length)
+    call fson_get(data, "char_array2", x2)
     do i = 1, count21
        do j = 1, count22
           call assert_equals(expected2(i,j), x2(i,j), "2d char array")

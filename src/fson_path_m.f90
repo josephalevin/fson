@@ -515,13 +515,12 @@ contains
 !
 ! GET ARRAY CHAR 1D
 !
-    subroutine get_array_1d_char(this, path, arr, str_len)
+    subroutine get_array_1d_char(this, path, arr)
 
       implicit none
       type(fson_value), pointer, intent(in) :: this
       character(len=*), intent(in), optional :: path
-      integer, intent(in) :: str_len
-      character(len = str_len), allocatable, intent(out) :: arr(:)
+      character(len = *), allocatable, intent(out) :: arr(:)
 
       if (allocated(arr)) deallocate(arr)
       call get_array_1d(this, path, array_callback_1d_char)
@@ -701,13 +700,12 @@ contains
 !
 ! GET ARRAY CHAR 2D
 !
-    subroutine get_array_2d_char(this, path, arr, str_len)
+    subroutine get_array_2d_char(this, path, arr)
 
       implicit none
       type(fson_value), pointer, intent(in) :: this
       character(len=*), intent(in), optional :: path
-      integer, intent(in) :: str_len
-      character(len = str_len), allocatable, intent(out) :: arr(:, :)
+      character(len = *), allocatable, intent(out) :: arr(:, :)
 
       if (allocated(arr)) deallocate(arr)
       call get_array_2d(this, path, array_callback_2d_char)
