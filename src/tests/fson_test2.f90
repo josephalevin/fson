@@ -190,7 +190,6 @@ contains
     data => fson_parse("test2.json")
     call fson_get(data, "escape_string", str)
     call assert_equals("\", str, "escape string")
-
     call fson_destroy(data)
 
   end subroutine test_escape_string
@@ -266,5 +265,32 @@ contains
 
 !------------------------------------------------------------------------
 
+subroutine test_no_label
+
+    type(fson_value), pointer :: data
+    ! Locals:
+    integer :: count, i
+    type(fson_value), pointer :: dict, item
+    character(len = 8) :: str
+  
+    data => fson_parse("test3.json")
+
+    count = fson_value_count(data)
+    call assert_equals(2, count, "count")
+    do i = 1, count
+       dict => fson_value_get(data, i)
+       item => fson_value_get(dict, "a")
+       call fson_get(item, "", str) 
+       call assert_equals("string a", str, "item a")
+       item => fson_value_get(dict, "b")
+       call fson_get(item, "", str) 
+       call assert_equals("string b", str, "item b")
+    end do
+
+    call fson_destroy(data)
+
+end subroutine test_no_label
+
+!------------------------------------------------------------------------
 
 end module fson_test2
