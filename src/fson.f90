@@ -379,44 +379,29 @@ contains
                         call exit(1)
                     end if
                     scientific = .true.
+                    decimal = .true.
                     ! this number has an exponent
                     exp = parse_integer(unit, str)
-                    if (exp < 0) then
-                       decimal = .true.
-                    end if
-
                 case default
-                    ! this is a integer
                     if (decimal) then
-
                         ! add the integral
                         frac = frac + integral
-
                         if (scientific) then
                             ! apply exponent
                             frac = frac * (10.0d0 ** exp)
                         end if
-
                         ! apply negative
                         if (negative) then
-                            frac = frac * (-1)
+                            frac = -frac
                         end if
-
                         value % value_type = TYPE_REAL
                         value % value_real = frac
                         value % value_double = frac
-
                     else
-                        if (scientific) then
-                        ! apply exponent
-                        integral = integral * (10.0d0 ** exp)
-                        end if
-
-                        ! apply negative
                         if (negative) then
-                        integral = integral * (-1)
+                           ! apply negative
+                           integral = -integral
                         end if
-
                         value % value_type = TYPE_INTEGER
                         value % value_integer = integral
                     end if
@@ -425,8 +410,6 @@ contains
                 end select
             end if
         end do
-
-
 
     end subroutine
 
