@@ -352,6 +352,7 @@ contains
 
         decimal = .false.
         scientific = .false.
+        frac = 0.0d0
 
         do
             ! first character is either - or a digit        
