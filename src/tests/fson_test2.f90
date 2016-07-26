@@ -203,6 +203,7 @@ contains
     real, parameter :: expected_positive = 2.e3
     real, parameter :: expected_negative = 2.e-3
     real, parameter :: expected_positive_large = 1.e16
+    real, parameter :: expected_negative_large = 2.e-16
 
     data => fson_parse("test2.json")
     call fson_get(data, "integer_mantissa_positive_exponent", x)
@@ -211,6 +212,9 @@ contains
     call assert_equals(expected_negative, x, "integer mantissa negative exponent")
     call fson_get(data, "integer_mantissa_large_exponent", x)
     call assert_equals(expected_positive_large, x, "integer mantissa large exponent")
+    call fson_get(data, "integer_mantissa_large_negative_exponent", x)
+    call assert_equals(expected_negative_large, x, &
+         "integer mantissa large negative exponent")
 
     call fson_destroy(data)
 
