@@ -72,10 +72,12 @@ contains
          [-3.0_dp, -2.1_dp, -1.2_dp, 0.0_dp, 1.9_dp, 0.1_dp, 10.0_dp]
     real(dp), parameter :: expected_exp(2) = &
          [1.4e-14_dp, 2.e-14_dp]
+    real(dp), parameter :: expected_exp_round(3) = &
+         [6.414e-16_dp, 3.139e-15_dp, 4.052e-15_dp]
     real(dp), parameter :: expected_2d(2,3) = &
          transpose(reshape([ &
          2._dp, -1._dp, 5._dp, -2.718_dp, 3.142_dp, 1.618_dp], [3,2]))
-    real(dp), parameter :: tol = 1.e-5_dp, exp_tol = 1.e-20_dp
+    real(dp), parameter :: tol = 1.e-5_dp, exp_tol = 1.e-24_dp
     type(fson_value), pointer :: data
     real(dp), allocatable :: vals(:), vals2(:,:)
 
@@ -87,6 +89,10 @@ contains
     call fson_get(data, "array_real_exp", vals)
     call assert_equals(expected_exp, vals, size(expected_exp), exp_tol, &
          "test_array_double_exp")
+
+    call fson_get(data, "array_real_exp_round", vals)
+    call assert_equals(expected_exp_round, vals, size(expected_exp_round), exp_tol, &
+         "test_array_double_exp_round")
 
     call fson_get(data, "array_real_2d", vals2)
     call assert_equals(expected_2d, vals2, size(expected_2d,1), size(expected_2d,2), &

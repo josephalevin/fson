@@ -6,6 +6,10 @@
 	     },
     "array_real": [-3.0, -2.1, -1.2, 0.0, 1.9, 1.0E-01, 1.0E+01],
     "array_real_exp": [1.4e-14, 2e-14],
+    "array_real_exp_round": [
+        6.4140000000000003e-16, 
+        3.1389999999999999e-15, 
+        4.0520000000000004e-15],
     "array_int": [7, 1, -2 , 4, -10],
     "array_logical": [true, false, true, false],
     "array_int_2d": [[1, 2], [3, 4], [5, 6]],
