@@ -352,6 +352,7 @@ contains
 
         decimal = .false.
         scientific = .false.
+        exp = 0
         frac = 0.0d0
 
         do
