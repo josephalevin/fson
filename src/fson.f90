@@ -371,7 +371,7 @@ contains
                         call exit(1)
                     end if
                     decimal = .true.
-                    frac = parse_integer(unit, str, digit_count)
+                    frac = parse_integer(unit, str, digit_count, allow_truncate = .true.)
                     frac = frac / (10.0d0 ** digit_count)
                 case ("e", "E")
                     ! this is already an exponent number
@@ -418,21 +418,30 @@ contains
     !
     ! PARSE INTEGER    
     !
-    integer(kind=8) function parse_integer(unit, str, digit_count) result(integral)
+    integer(kind=8) function parse_integer(unit, str, digit_count, allow_truncate) &
+         result(integral)
         integer, intent(in) :: unit
         character(*), intent(inout) :: str
-        integer, optional, intent(inout) :: digit_count
+        integer, optional, intent(out) :: digit_count
+        logical, optional, intent(in) :: allow_truncate
         logical :: eof, found_sign, found_digit
         character :: c
         integer :: tmp, icount, isign
+        logical :: do_truncate, truncating
         integer, parameter :: max_integer_length = 18
 
+        if (present(allow_truncate)) then
+           do_truncate = allow_truncate
+        else
+           do_truncate = .false.
+        end if
 
         icount = 0
         integral = 0
         isign = 1
         found_sign = .false.
         found_digit = .false.
+        truncating = .false.
         do
             c = pop_char(unit, str, eof = eof, skip_ws = .true.)
             if (eof) then
@@ -442,34 +451,40 @@ contains
                 select case(c)
                 case ("+")
                     if (found_sign.or.found_digit) then
-                        print *, "ERROR: Miss formatted number."
+                        print *, "ERROR: Misformatted number."
                         call exit(1)
                     end if
                     found_sign = .true.
                 case ("-")
                     if (found_sign.or.found_digit) then
-                        print *, "ERROR: Miss formatted number."
+                        print *, "ERROR: Misformatted number."
                         call exit(1)
                     end if
                     found_sign = .true.
                     isign = -1
                 case ("0":"9")
                     found_sign = .true.
-                    if (icount > max_integer_length) then
-                        print *, "ERROR: Too many digits for an integer."
-                        call exit(1)
+                    if ((icount > max_integer_length) .and. (.not. truncating)) then
+                       if (do_truncate) then
+                          truncating = .true.
+                       else
+                          print *, "ERROR: Too many digits for an integer."
+                          call exit(1)
+                       end if
                     end if
                     ! digit        
                     read (c, '(i1)') tmp
                     ! shift
-                    if (icount > 0) then
-                        integral = integral * 10
+                    if (.not. truncating) then
+                       if (icount > 0) then
+                          integral = integral * 10
+                       end if
+                       ! add
+                       integral = integral + tmp
+                       ! increase the icount
+                       icount = icount + 1
                     end if
-                    ! add
-                    integral = integral + tmp
 
-                    ! increase the icount
-                    icount = icount + 1
                 case default
                     if (present(digit_count)) then
                         digit_count = icount
