@@ -250,6 +250,22 @@ contains
 
 !------------------------------------------------------------------------
 
+  subroutine test_long_frac_double()
+
+    type(fson_value), pointer :: data
+    real(dp) :: x
+    real(dp), parameter :: expected = 0.0002_dp, tol = 1.e-18_dp
+
+    data => fson_parse("test2.json")
+    call fson_get(data, "long_frac_double", x)
+    call assert_equals(expected, x, tol, "long frac double")
+
+    call fson_destroy(data)
+
+  end subroutine test_long_frac_double
+
+!------------------------------------------------------------------------
+
   subroutine test_char_array()
 
     type(fson_value), pointer :: data

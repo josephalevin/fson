@@ -22,6 +22,7 @@
     "integer_mantissa_large_exponent": 1e16,
     "integer_mantissa_large_negative_exponent": 2e-16,
     "long_integral_double": 10000000000.,
+    "long_frac_double": 0.00020000000000000001,
     "char_array": ["alpha", "beta", "foo"],
     "char_array2": [["alpha", "beta", "gamma"], ["foo", "bar", "fubar"]]
 }
