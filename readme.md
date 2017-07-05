@@ -150,7 +150,7 @@ When extracting character arrays, it is necessary to specify a string length whe
 integer, parameter :: str_len = 8
 character(len = str_len), allocatable :: m(:)
 
-data => fson_parse(data.json")
+data => fson_parse("data.json")
 call fson_get(data, "char_array", m)
 ```
 
