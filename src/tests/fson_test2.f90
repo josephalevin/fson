@@ -266,6 +266,22 @@ contains
 
 !------------------------------------------------------------------------
 
+  subroutine test_long_integer()
+
+    type(fson_value), pointer :: data
+    real(dp) :: x
+    real(dp), parameter :: expected = 3.155760e9_dp, tol = 1.e-3_dp
+
+    data => fson_parse("test2.json")
+    call fson_get(data, "long_int", x)
+    call assert_equals(expected, x, tol, "long int")
+
+    call fson_destroy(data)
+
+  end subroutine test_long_integer
+  
+!------------------------------------------------------------------------
+
   subroutine test_char_array()
 
     type(fson_value), pointer :: data

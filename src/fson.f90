@@ -329,7 +329,7 @@ contains
         type(fson_value), pointer :: value
         logical :: eof, negative, decimal, scientific
         character :: c
-        integer :: exp, digit_count
+        integer :: exp, digit_count, i
         integer(kind=8) :: integral
         double precision :: frac
 
@@ -404,8 +404,15 @@ contains
                            ! apply negative
                            integral = -integral
                         end if
-                        value % value_type = TYPE_INTEGER
-                        value % value_integer = integral
+                        if (abs(integral) < huge(i)) then
+                           value % value_type = TYPE_INTEGER
+                           value % value_integer = integral
+                        else
+                           ! convert huge integers to real:
+                           value % value_type = TYPE_REAL
+                           value % value_real = real(integral)
+                           value % value_double = dble(integral)
+                        end if
                     end if
                     call push_char(c)
                     exit
