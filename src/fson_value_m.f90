@@ -52,6 +52,7 @@ module fson_value_m
         integer :: value_type = TYPE_UNKNOWN
         logical :: value_logical
         integer :: value_integer
+        integer(kind = 8) :: value_long_integer
         real :: value_real
         double precision :: value_double
         integer, private :: count = 0
@@ -300,7 +301,7 @@ contains
                 print *, repeat(" ", spaces), "false"
             end if
         case (TYPE_INTEGER)
-            print *, repeat(" ", spaces), this % value_integer
+            print *, repeat(" ", spaces), this % value_long_integer
         case (TYPE_REAL)
             print *, repeat(" ", spaces), this % value_double
         end select

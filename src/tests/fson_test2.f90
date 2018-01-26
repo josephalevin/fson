@@ -266,7 +266,7 @@ contains
 
 !------------------------------------------------------------------------
 
-  subroutine test_long_integer()
+  subroutine test_long_integer_double()
 
     type(fson_value), pointer :: data
     real(dp) :: x
@@ -274,12 +274,12 @@ contains
 
     data => fson_parse("test2.json")
     call fson_get(data, "long_int", x)
-    call assert_equals(expected, x, tol, "long int")
+    call assert_equals(expected, x, tol, "long int to double")
 
     call fson_destroy(data)
 
-  end subroutine test_long_integer
-  
+  end subroutine test_long_integer_double
+
 !------------------------------------------------------------------------
 
   subroutine test_char_array()

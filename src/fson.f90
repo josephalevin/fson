@@ -400,19 +400,13 @@ contains
                         value % value_real = frac
                         value % value_double = frac
                     else
-                        if (negative) then
-                           ! apply negative
-                           integral = -integral
-                        end if
-                        if (abs(integral) < huge(i)) then
-                           value % value_type = TYPE_INTEGER
-                           value % value_integer = integral
-                        else
-                           ! convert huge integers to real:
-                           value % value_type = TYPE_REAL
-                           value % value_real = real(integral)
-                           value % value_double = dble(integral)
-                        end if
+                       if (negative) then
+                          ! apply negative
+                          integral = -integral
+                       end if
+                       value % value_type = TYPE_INTEGER
+                       value % value_integer = integral
+                       value % value_long_integer = integral
                     end if
                     call push_char(c)
                     exit

@@ -35,6 +35,7 @@ module fson_path_m
     interface fson_path_get
         module procedure get_by_path
         module procedure get_integer
+        module procedure get_long_integer
         module procedure get_real
         module procedure get_double
         module procedure get_logical
@@ -225,6 +226,43 @@ contains
     end subroutine get_integer
     
     !
+    ! GET LONG INTEGER
+    !
+    subroutine get_long_integer(this, path, value)
+      type(fson_value), pointer :: this, p
+      character(len=*), optional :: path
+      integer(kind = 8) :: value
+
+      nullify(p)
+      if(present(path)) then
+         call get_by_path(this=this, path=path, p=p)
+      else
+         p => this
+      end if
+
+      if(.not.associated(p)) then
+         print *, "Unable to resolve path: ", path
+         call exit(1)
+      end if
+
+      if(p % value_type == TYPE_INTEGER) then
+         value = p % value_long_integer
+      else if (p % value_type == TYPE_REAL) then
+         value = p % value_real
+      else if (p % value_type == TYPE_LOGICAL) then
+         if (p % value_logical) then
+            value = 1
+         else
+            value = 0
+         end if
+      else
+         print *, "Unable to resolve value to long integer: ", path
+         call exit(1)
+      end if
+
+    end subroutine get_long_integer
+
+    !
     ! GET REAL
     !
     subroutine get_real(this, path, value)
@@ -248,7 +286,7 @@ contains
                 
         
         if(p % value_type == TYPE_INTEGER) then            
-            value = p % value_integer
+            value = p % value_long_integer
         else if (p % value_type == TYPE_REAL) then
             value = p % value_real
         else if (p % value_type == TYPE_LOGICAL) then
@@ -288,7 +326,7 @@ contains
                 
         
         if(p % value_type == TYPE_INTEGER) then            
-            value = p % value_integer
+            value = p % value_long_integer
         else if (p % value_type == TYPE_REAL) then
             value = p % value_double
         else if (p % value_type == TYPE_LOGICAL) then
@@ -329,7 +367,7 @@ contains
                 
         
         if(p % value_type == TYPE_INTEGER) then            
-            value = (p % value_integer > 0)       
+            value = (p % value_long_integer > 0)
         else if (p % value_type == TYPE_LOGICAL) then
             value = p % value_logical
         else
