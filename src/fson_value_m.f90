@@ -218,23 +218,24 @@ contains
     function get_by_name_string(this, name) result(p)
         type(fson_value), pointer :: this, p
         type(fson_string), pointer :: name
-        integer :: i                
+        integer :: i, count
         
         if(this % value_type .ne. TYPE_OBJECT) then
             nullify(p)
             return 
         end if
-        
-        do i=1, fson_value_count(this)
-            p => fson_value_get(this, i)
-            if (fson_string_equals(p%name, name)) then                
-                return
-            end if
+
+        count = fson_value_count(this)
+        p => this%children
+        do i = 1, count
+           if (fson_string_equals(p%name, name)) then
+              return
+           end if
+           p => p%next
         end do
         
         ! didn't find anything
         nullify(p)
-        
         
     end function get_by_name_string
     
@@ -259,34 +260,34 @@ contains
         case(TYPE_OBJECT)
             print *, repeat(" ", spaces), "{"
             count = fson_value_count(this)
+            element => this%children
             do i = 1, count
-                ! get the element
-                element => fson_value_get(this, i)
-                ! get the name
-                call fson_string_copy(element % name, tmp_chars)
-                ! print the name
-                print *, repeat(" ", spaces), '"', trim(tmp_chars), '":'
-                ! recursive print of the element
-                call fson_value_print(element, tab + 1)
-                ! print the separator if required
-                if (i < count) then
-                    print *, repeat(" ", spaces), ","
-                end if
+               ! get the name
+               call fson_string_copy(element % name, tmp_chars)
+               ! print the name
+               print *, repeat(" ", spaces), '"', trim(tmp_chars), '":'
+               ! recursive print of the element
+               call fson_value_print(element, tab + 1)
+               ! print the separator if required
+               if (i < count) then
+                  print *, repeat(" ", spaces), ","
+               end if
+               element => element%next
             end do
 
             print *, repeat(" ", spaces), "}"
         case (TYPE_ARRAY)
             print *, repeat(" ", spaces), "["
             count = fson_value_count(this)
+            element => this%children
             do i = 1, count
-                ! get the element
-                element => fson_value_get(this, i)
-                ! recursive print of the element
-                call fson_value_print(element, tab + 1)
-                ! print the separator if required
-                if (i < count) then
-                    print *, ","
-                end if
+               ! recursive print of the element
+               call fson_value_print(element, tab + 1)
+               ! print the separator if required
+               if (i < count) then
+                  print *, ","
+               end if
+               element => element%next
             end do
             print *, repeat(" ", spaces), "]"
         case (TYPE_NULL)
