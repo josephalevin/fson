@@ -146,7 +146,7 @@ contains
                 
         ! grab the last child if present in the path
         if (child_i <= length) then            
-            p => fson_value_get(p, path(child_i:i-1))                    
+            p => fson_value_get(p, path(child_i:length))
             if(.not.associated(p)) then
                 return
             else                
