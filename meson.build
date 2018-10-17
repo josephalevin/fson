@@ -39,7 +39,7 @@ if FRUIT.found()
   add_test_setup('FRUIT',
                  exe_wrapper: [python,
                                join_paths(meson.source_root(),
-                                          'fson_run_tests.py')])
+                                          'fson_test_run.py')])
   test('unit_tests', unit_tests)
 
 endif
