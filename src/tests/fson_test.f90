@@ -4,28 +4,29 @@ module fson_test
 
   contains
 
-  function read_file(file) result(r)
-    character(:), allocatable :: s
-    character(1024) :: r
-    character(*) :: file
-    character(len=1) :: buf
-    integer ios, size
-    integer, parameter :: end_of_file = -1    ! Processor dependent
-    integer, parameter :: end_of_record = -2  ! Processor dependent
-    open (unit = 21, file = file) !, status = "old", action = "read", form = "formatted")
-    do
-      READ (unit = 21, fmt = "(A)", ADVANCE='NO', SIZE=size, iostat = ios) buf
-      if (ios == end_of_record) then
-        s = s//CHAR(10)
-        cycle
-      else if (ios == end_of_file) then
-        r = s
-        exit
-      end if
-      s = s//buf
-    end do
-    close(21)
-  end function
+  function read_file(filename) result(r)
+    character(*) :: filename
+    character(:), allocatable :: r
+    ! Locals:
+    integer :: iunit, istat, filesize
+
+    open(newunit = iunit, file = filename, status = 'old', &
+         form = 'unformatted', access='stream', iostat = istat)
+
+    if (istat == 0) then
+       inquire(file = filename, size = filesize)
+       if (filesize > 0) then
+          allocate(character(len = filesize) :: r)
+          read(iunit, pos = 1) r
+          close(iunit)
+       else
+          write(*,*) 'Error getting file size.'
+       end if
+    else
+       write(*,*) 'Error opening file.'
+    end if
+    
+  end function read_file
 
   subroutine subtest_fson_test1(json_data)
     use fson
