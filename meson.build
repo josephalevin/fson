@@ -24,7 +24,7 @@ if FRUIT.found()
     'src/tests/fson_test.f90',
     'src/tests/fson_test2.f90']
 
-  executable('fson_test_driver',
+  unit_tests = executable('fson_test_driver',
              test_sources, test_driver_src,
              link_with: FSON,
              dependencies: FRUIT)
@@ -35,5 +35,11 @@ if FRUIT.found()
       input: join_paths(meson.source_root(), 'src', 'tests', f),
       output: f, copy: true)
   endforeach
+
+  add_test_setup('FRUIT',
+                 exe_wrapper: [python,
+                               join_paths(meson.source_root(),
+                                          'fson_run_tests.py')])
+  test('unit_tests', unit_tests)
 
 endif
