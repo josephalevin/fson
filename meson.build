@@ -14,21 +14,6 @@ FSON = shared_library('fson', fson_sources)
 
 if FRUIT.found()
 
-  python = find_program('python')
-  test_driver_src = configure_file(
-    output: 'fson_test_driver.f90',
-    command: [python, join_paths(meson.source_root(),
-                                 'fson_test_setup.py')])
-
-  test_sources = [
-    'src/tests/fson_test.f90',
-    'src/tests/fson_test2.f90']
-
-  unit_tests = executable('fson_test_driver',
-             test_sources, test_driver_src,
-             link_with: FSON,
-             dependencies: FRUIT)
-
   json_datafiles = ['test1.json', 'test2.json', 'test3.json']
   foreach f: json_datafiles
     json_data = configure_file(
@@ -36,10 +21,23 @@ if FRUIT.found()
       output: f, copy: true)
   endforeach
 
-  add_test_setup('FRUIT',
-                 exe_wrapper: [python,
-                               join_paths(meson.source_root(),
-                                          'fson_test_run.py')])
-  test('unit_tests', unit_tests)
+  python = find_program('python')
+
+  test_names = ['fson_test', 'fson_test2']
+  foreach test_name: test_names
+    test_driver_src = configure_file(
+      output: test_name + '_main.f90',
+      command: [python,
+                join_paths(meson.source_root(), 'fson_test_setup.py'),
+                test_name])
+    unit_test = executable(
+      test_name, [join_paths(meson.source_root(),
+                             'src', 'tests',
+                             test_name + '.f90'),
+                  test_driver_src],
+      link_with: FSON,
+      dependencies: FRUIT)
+    test(test_name, unit_test)
+  endforeach
 
 endif

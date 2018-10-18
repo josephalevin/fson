@@ -1,22 +1,20 @@
-# Writes driver program source for FRUIT unit tests.
+# Writes driver program source for a FRUIT unit test.
 
 import os
+import sys
 from FRUIT import *
-from glob import glob
 
-driver_name = 'fson_test_driver'
-test_dir = 'src/tests/'
+test_dir = 'src/tests'
 build_dir = 'build/'
+
+test_name = sys.argv[1]
+driver_source = os.path.join(build_dir, test_name + '_main.f90')
+test_module = os.path.join(test_dir, test_name + '.f90')
 
 orig_dir = os.getcwd()
 os.chdir('..')
 
-test_sources = glob(test_dir + '*.f90')
-
-driver_source = build_dir + driver_name + '.f90'
-if driver_source in test_sources: test_sources.remove(driver_source)
-
-suite = test_suite(test_sources)
+suite = test_suite([test_module])
 suite.write(driver_source)
 
 os.chdir(orig_dir)
