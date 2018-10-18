@@ -30,11 +30,10 @@ module fson_test
   subroutine subtest_fson_test1(json_data)
     use fson
     use fson_value_m
-    type(fson_value), pointer :: json_data, array, item
+    type(fson_value), pointer :: json_data
     integer :: age
     REAL :: testReal, testExp, testNegExp, testLongReal
     DOUBLE PRECISION :: testDouble, testExpDouble
-    character(len=1024) :: strval, strval2
     call fson_get(json_data, "age", age)
     call fson_get(json_data, "testReal", testReal)
     call fson_get(json_data, "testLongReal", testLongReal)
