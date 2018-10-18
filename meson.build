@@ -28,9 +28,7 @@ pkg = import('pkgconfig')
 pkg.generate(FSON,
   name: 'FSON',
   description: 'Fortran 95 JSON parser library',
-  filebase: 'FSON',
-  install_dir: 'pkgconfig'
-)
+  filebase: 'FSON')
 
 if FRUIT.found()
 
