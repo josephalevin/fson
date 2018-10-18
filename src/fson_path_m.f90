@@ -211,7 +211,7 @@ contains
         if(p % value_type == TYPE_INTEGER) then            
             value = p % value_integer
         else if (p % value_type == TYPE_REAL) then
-            value = p % value_real
+            value = int(p % value_real)
         else if (p % value_type == TYPE_LOGICAL) then
             if (p % value_logical) then
                 value = 1
@@ -248,7 +248,7 @@ contains
       if(p % value_type == TYPE_INTEGER) then
          value = p % value_long_integer
       else if (p % value_type == TYPE_REAL) then
-         value = p % value_real
+         value = int(p % value_real, kind = 8)
       else if (p % value_type == TYPE_LOGICAL) then
          if (p % value_logical) then
             value = 1
@@ -286,7 +286,7 @@ contains
                 
         
         if(p % value_type == TYPE_INTEGER) then            
-            value = p % value_long_integer
+            value = real(p % value_long_integer)
         else if (p % value_type == TYPE_REAL) then
             value = p % value_real
         else if (p % value_type == TYPE_LOGICAL) then
