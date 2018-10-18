@@ -4,16 +4,37 @@ project('FSON', ['fortran', 'c'], version: '1.0.0')
 
 FRUIT  = dependency('FRUIT', version: '>=3.4.1', required: false)
 
-fson_sources = [
-  'src/fson_string_m.f90',
-  'src/fson_value_m.f90',
-  'src/fson_path_m.f90',
-  'src/fson.f90']
+fson_modules = ['fson_string_m.f90',
+                'fson_value_m.f90',
+                'fson_path_m.f90',
+                'fson.f90']
+fson_sources = []
+foreach name: fson_modules
+  fson_sources += join_paths('src', name)
+endforeach
 
-FSON = shared_library('fson', fson_sources)
+FSON = shared_library('fson', fson_sources, install: true)
+
+# install module files:
+fson_objs = []
+foreach name: fson_modules
+  fson_objs += 'src_' + name + '.o'
+endforeach
+install_subdir(join_paths('build', 'fson@sha'),
+               install_dir: 'include', strip_directory: true,
+               exclude_files: [fson_objs, 'libfson.so.symbols'])
+
+pkg = import('pkgconfig')
+pkg.generate(FSON,
+  name: 'FSON',
+  description: 'Fortran 95 JSON parser library',
+  filebase: 'FSON',
+  install_dir: 'pkgconfig'
+)
 
 if FRUIT.found()
 
+  # unit test data:
   json_datafiles = ['test1.json', 'test2.json', 'test3.json']
   foreach f: json_datafiles
     json_data = configure_file(
@@ -21,8 +42,8 @@ if FRUIT.found()
       output: f, copy: true)
   endforeach
 
+  # unit tests:
   python = find_program('python')
-
   test_names = ['fson_test', 'fson_test2']
   foreach test_name: test_names
     test_driver_src = configure_file(
