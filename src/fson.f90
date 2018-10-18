@@ -329,7 +329,7 @@ contains
         type(fson_value), pointer :: value
         logical :: eof, negative, decimal, scientific
         character :: c
-        integer :: exp, digit_count, i
+        integer :: exp, digit_count
         integer(kind=8) :: integral
         double precision :: frac
 
@@ -383,7 +383,7 @@ contains
                     scientific = .true.
                     decimal = .true.
                     ! this number has an exponent
-                    exp = parse_integer(unit, str)
+                    exp = int(parse_integer(unit, str), kind = 4)
                 case default
                     if (decimal) then
                         ! add the integral
@@ -397,7 +397,7 @@ contains
                             frac = -frac
                         end if
                         value % value_type = TYPE_REAL
-                        value % value_real = frac
+                        value % value_real = real(frac)
                         value % value_double = frac
                     else
                        if (negative) then
@@ -405,7 +405,7 @@ contains
                           integral = -integral
                        end if
                        value % value_type = TYPE_INTEGER
-                       value % value_integer = integral
+                       value % value_integer = int(integral, kind = 4)
                        value % value_long_integer = integral
                     end if
                     call push_char(c)

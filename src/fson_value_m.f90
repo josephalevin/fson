@@ -96,7 +96,6 @@ contains
       logical, intent(in), optional :: destroy_next
 
       type(fson_value), pointer :: p
-      integer :: count
       logical :: donext
 
       if (present(destroy_next)) then
@@ -172,7 +171,7 @@ contains
     ! FSON_VALUE_COUNT
     !
     integer function fson_value_count(this) result(count)
-        type(fson_value), pointer :: this, p
+        type(fson_value), pointer :: this
 
         count = this % count
 
