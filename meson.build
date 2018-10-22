@@ -36,7 +36,7 @@ if FRUIT.found()
   json_datafiles = ['test1.json', 'test2.json', 'test3.json']
   foreach f: json_datafiles
     json_data = configure_file(
-      input: join_paths(meson.source_root(), 'src', 'tests', f),
+      input: join_paths(meson.current_source_dir(), 'src', 'tests', f),
       output: f, copy: true)
   endforeach
 
@@ -47,10 +47,10 @@ if FRUIT.found()
     test_driver_src = configure_file(
       output: test_name + '_main.f90',
       command: [python,
-                join_paths(meson.source_root(), 'fson_test_setup.py'),
+                join_paths(meson.current_source_dir(), 'fson_test_setup.py'),
                 test_name])
     unit_test = executable(
-      test_name, [join_paths(meson.source_root(),
+      test_name, [join_paths(meson.current_source_dir(),
                              'src', 'tests',
                              test_name + '.f90'),
                   test_driver_src],
