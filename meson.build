@@ -48,7 +48,7 @@ if FRUIT.found()
       output: test_name + '_main.f90',
       command: [python,
                 join_paths(meson.current_source_dir(), 'fson_test_setup.py'),
-                meson.current_source_dir(), meson.build_root(),
+                meson.current_source_dir(), meson.current_build_dir(),
                 test_name])
     unit_test = executable(
       test_name, [join_paths(meson.current_source_dir(),
