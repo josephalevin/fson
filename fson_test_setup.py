@@ -1,18 +1,18 @@
 # Writes driver program source for a FRUIT unit test.
+# First argument is the project root directory path, second argument is the test name.
 
 import os
 import sys
 from FRUIT import *
 
-test_dir = 'src/tests'
-build_dir = 'build/'
+project_dir = sys.argv[1]
+test_name = sys.argv[2]
 
-test_name = sys.argv[1]
-driver_source = os.path.join(build_dir, test_name + '_main.f90')
-test_module = os.path.join(test_dir, test_name + '.f90')
+driver_source = os.path.join('build', test_name + '_main.f90')
+test_module = os.path.join('src', 'tests', test_name + '.f90')
 
 orig_dir = os.getcwd()
-os.chdir('..')
+os.chdir(project_dir)
 
 suite = test_suite([test_module])
 suite.write(driver_source)
