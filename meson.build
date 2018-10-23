@@ -15,6 +15,8 @@ endforeach
 
 FSON = shared_library('fson', fson_sources, install: true)
 
+FSON_dep = declare_dependency(link_with : FSON)
+
 # install module files:
 fson_objs = []
 foreach name: fson_modules
