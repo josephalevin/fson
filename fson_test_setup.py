@@ -8,8 +8,8 @@ from FRUIT import *
 project_dir = sys.argv[1]
 test_name = sys.argv[2]
 
-driver_source = os.path.join('build', test_name + '_main.f90')
-test_module = os.path.join('src', 'tests', test_name + '.f90')
+driver_source = os.path.join(project_dir, 'build', test_name + '_main.f90')
+test_module = os.path.join(project_dir, 'src', 'tests', test_name + '.f90')
 
 orig_dir = os.getcwd()
 os.chdir(project_dir)
