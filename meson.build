@@ -17,12 +17,6 @@ FSON = shared_library('fson', fson_sources, install: true)
 
 FSON_dep = declare_dependency(link_with : FSON)
 
-pkg = import('pkgconfig')
-pkg.generate(FSON,
-  name: 'FSON',
-  description: 'Fortran 95 JSON parser library',
-  filebase: 'FSON')
-
 if FRUIT.found()
 
   # unit test data:
