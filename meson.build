@@ -17,15 +17,6 @@ FSON = shared_library('fson', fson_sources, install: true)
 
 FSON_dep = declare_dependency(link_with : FSON)
 
-# install module files:
-fson_objs = []
-foreach name: fson_modules
-  fson_objs += 'src_' + name + '.o'
-endforeach
-install_subdir(join_paths('build', 'fson@sha'),
-               install_dir: 'include', strip_directory: true,
-               exclude_files: [fson_objs, 'libfson.so.symbols'])
-
 pkg = import('pkgconfig')
 pkg.generate(FSON,
   name: 'FSON',
