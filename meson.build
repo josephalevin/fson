@@ -13,7 +13,13 @@ foreach name: fson_modules
   fson_sources += join_paths('src', name)
 endforeach
 
-FSON = shared_library('fson', fson_sources, install: true)
+if meson.get_compiler('fortran').get_id() == 'gcc'
+  f_args = ['-Wno-maybe-uninitialized']
+else
+  f_args = []
+endif
+
+FSON = shared_library('fson', fson_sources, fortran_args: f_args, install: true)
 
 FSON_dep = declare_dependency(link_with : FSON)
 
