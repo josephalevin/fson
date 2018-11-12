@@ -19,9 +19,9 @@ else
   f_args = []
 endif
 
-FSON = shared_library('fson', fson_sources, fortran_args: f_args, install: true)
+fson = shared_library('fson', fson_sources, fortran_args: f_args, install: true)
 
-FSON_dep = declare_dependency(link_with : FSON)
+fson_dep = declare_dependency(link_with : fson)
 
 prefix = get_option('prefix')
 libdir = get_option('libdir')
@@ -39,7 +39,7 @@ if includedir != ''
                  strip_directory: true,
                  exclude_files: fson_objs)
   pkg = import('pkgconfig')
-  pkg.generate(FSON,
+  pkg.generate(fson,
                description: 'Fortran 95 JSON parser')
 endif
 
@@ -68,7 +68,7 @@ if FRUIT.found()
                              'src', 'tests',
                              test_name + '.f90'),
                   test_driver_src],
-      link_with: FSON,
+      link_with: fson,
       dependencies: FRUIT)
     test(test_name, unit_test)
   endforeach
