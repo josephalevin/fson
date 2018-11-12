@@ -23,6 +23,26 @@ FSON = shared_library('fson', fson_sources, fortran_args: f_args, install: true)
 
 FSON_dep = declare_dependency(link_with : FSON)
 
+prefix = get_option('prefix')
+libdir = get_option('libdir')
+includedir = get_option('includedir')
+if includedir != ''
+  module_install_dir = join_paths(prefix, includedir)
+  fson_objs = []
+  foreach m: fson_modules
+    fson_objs += ['src_' + m + '.o']
+  endforeach
+  # NB this is a temporary measure until Meson gets specific
+  # functionality for installing Fortran modules:
+  install_subdir(join_paths('build', 'fson@sha'),
+                 install_dir: module_install_dir,
+                 strip_directory: true,
+                 exclude_files: fson_objs)
+  pkg = import('pkgconfig')
+  pkg.generate(FSON,
+               description: 'Fortran 95 JSON parser')
+endif
+
 if FRUIT.found()
 
   # unit test data:
