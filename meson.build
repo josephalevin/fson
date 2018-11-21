@@ -2,7 +2,7 @@
 
 project('FSON', ['fortran', 'c'], version: '1.0.0')
 
-FRUIT  = dependency('FRUIT', version: '>=3.4.1', required: false)
+zofu  = dependency('zofu', version: '>=0.1.0', required: false)
 
 fson_modules = ['fson_string_m.f90',
                 'fson_value_m.f90',
@@ -43,7 +43,7 @@ if includedir != ''
                description: 'Fortran 95 JSON parser')
 endif
 
-if FRUIT.found()
+if zofu.found()
 
   # unit test data:
   json_datafiles = ['test1.json', 'test2.json', 'test3.json']
@@ -54,22 +54,18 @@ if FRUIT.found()
   endforeach
 
   # unit tests:
-  python = find_program('python')
   test_names = ['fson_test', 'fson_test2']
   foreach test_name: test_names
+    test_src = join_paths(meson.current_source_dir(),
+                        'src', 'tests', test_name + '_zofu.f90')
+    driver_src_name = test_name + '_driver.f90'
     test_driver_src = configure_file(
-      output: test_name + '_main.f90',
-      command: [python,
-                join_paths(meson.current_source_dir(), 'fson_test_setup.py'),
-                meson.current_source_dir(), meson.current_build_dir(),
-                test_name])
+      output: driver_src_name,
+      command: ['zofu-driver', test_src, driver_src_name])
     unit_test = executable(
-      test_name, [join_paths(meson.current_source_dir(),
-                             'src', 'tests',
-                             test_name + '.f90'),
-                  test_driver_src],
+      test_name, [test_driver_src, test_src],
       link_with: fson,
-      dependencies: FRUIT)
+      dependencies: zofu)
     test(test_name, unit_test)
   endforeach
 
