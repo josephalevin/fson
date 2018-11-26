@@ -6,3 +6,4 @@ nbproject/private/
 .*.swp
 *.o
 src/tests/*driver.f90
+subprojects/zofu/
