@@ -5,7 +5,21 @@ module fson_test
 
   implicit none
 
-  contains
+  character(len = 512) :: data_path
+
+contains
+
+!------------------------------------------------------------------------
+
+  subroutine setup()
+
+    ! Locals:
+    integer :: ios
+
+    call get_environment_variable('FSON_TEST_DATA_PATH', data_path, status = ios)
+    if (ios /= 0) data_path = ''
+
+  end subroutine setup
 
 !------------------------------------------------------------------------
 
@@ -74,9 +88,9 @@ module fson_test
     class(unit_test_type), intent(in out) :: test
     ! Locals:
     type(fson_value), pointer :: json_data
-    character(1024)::inputString
+    character(1024) :: inputString
 
-    inputString = read_file("test1.json")
+    inputString = read_file(trim(adjustl(data_path)) // "test1.json")
 
     json_data => fson_parse(str=inputString)
     call subtest_fson_test1(test, json_data)
@@ -91,7 +105,7 @@ module fson_test
     ! Locals:
     type(fson_value), pointer :: json_data
 
-    json_data => fson_parse("test1.json")
+    json_data => fson_parse(trim(adjustl(data_path)) // "test1.json")
     call subtest_fson_test1(test, json_data)
 
   end subroutine test_fson_parse_file

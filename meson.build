@@ -45,16 +45,12 @@ endif
 
 if zofu.found()
 
-  # unit test data:
-  json_datafiles = ['test1.json', 'test2.json', 'test3.json']
-  foreach f: json_datafiles
-    json_data = configure_file(
-      input: join_paths(meson.current_source_dir(), 'src', 'tests', f),
-      output: f, copy: true)
-  endforeach
-
   # unit tests:
   test_names = ['fson_test', 'fson_test2']
+  test_env = environment()
+  test_env.set('FSON_TEST_DATA_PATH',
+             join_paths(meson.current_source_dir(), 'src', 'tests', ''))
+
   foreach test_name: test_names
     test_src = join_paths(meson.current_source_dir(),
                         'src', 'tests', test_name + '_zofu.f90')
@@ -66,7 +62,7 @@ if zofu.found()
       test_name, [test_driver_src, test_src],
       link_with: fson,
       dependencies: zofu)
-    test(test_name, unit_test)
+    test(test_name, unit_test, env: test_env)
   endforeach
 
 endif

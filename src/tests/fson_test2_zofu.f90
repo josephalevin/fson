@@ -7,8 +7,19 @@ module fson_test2
   implicit none
 
   integer, parameter :: dp = kind(0.d0)
+  character(len = 512) :: data_path
 
 contains
+
+  subroutine setup()
+
+    ! Locals:
+    integer :: ios
+
+    call get_environment_variable('FSON_TEST_DATA_PATH', data_path, status = ios)
+    if (ios /= 0) data_path = ''
+
+  end subroutine setup
 
 !------------------------------------------------------------------------
 
@@ -21,7 +32,7 @@ contains
     type(fson_value), pointer :: data
     integer, allocatable :: vals(:), vals2(:,:)
     
-    data => fson_parse("test2.json")
+    data => fson_parse(trim(adjustl(data_path)) // "test2.json")
 
     call fson_get(data, "array_int", vals)
     call test%assert(expected, vals, "test_array_int")
@@ -46,7 +57,7 @@ contains
     type(fson_value), pointer :: data
     real, allocatable :: vals(:), vals2(:,:)
 
-    data => fson_parse("test2.json")
+    data => fson_parse(trim(adjustl(data_path)) // "test2.json")
 
     call fson_get(data, "array_real", vals)
     call test%assert(expected, vals, "test_array_real")
@@ -77,7 +88,7 @@ contains
     type(fson_value), pointer :: data
     real(dp), allocatable :: vals(:), vals2(:,:)
 
-    data => fson_parse("test2.json")
+    data => fson_parse(trim(adjustl(data_path)) // "test2.json")
 
     call fson_get(data, "array_real", vals)
     call test%assert(expected, vals, "test_array_double")
@@ -109,7 +120,7 @@ contains
     type(fson_value), pointer :: data
     logical, allocatable :: vals(:), vals2(:,:)
 
-    data => fson_parse("test2.json")
+    data => fson_parse(trim(adjustl(data_path)) // "test2.json")
 
     call fson_get(data, "array_logical", vals)
     call test%assert(expected, vals, "test_array_logical")
@@ -140,7 +151,7 @@ contains
     logical :: val_logical
     character(len = len(expected_val_string)) :: val_string
 
-    data => fson_parse("test2.json")
+    data => fson_parse(trim(adjustl(data_path)) // "test2.json")
 
     call fson_get(data, "dict1", dict)
 
@@ -178,7 +189,7 @@ contains
     type(fson_value), pointer :: data
     character(len = 1) :: str
     
-    data => fson_parse("test2.json")
+    data => fson_parse(trim(adjustl(data_path)) // "test2.json")
     call fson_get(data, "empty_string", str)
     call test%assert("", str, "empty string")
 
@@ -195,7 +206,7 @@ contains
     type(fson_value), pointer :: data
     character(len = 1) :: str
 
-    data => fson_parse("test2.json")
+    data => fson_parse(trim(adjustl(data_path)) // "test2.json")
     call fson_get(data, "escape_string", str)
     call test%assert("\", str, "escape string")
     call fson_destroy(data)
@@ -215,7 +226,7 @@ contains
     real, parameter :: expected_positive_large = 1.e16
     real, parameter :: expected_negative_large = 2.e-16
 
-    data => fson_parse("test2.json")
+    data => fson_parse(trim(adjustl(data_path)) // "test2.json")
     call fson_get(data, "integer_mantissa_positive_exponent", x)
     call test%assert(expected_positive, x, "integer mantissa positive exponent")
     call fson_get(data, "integer_mantissa_negative_exponent", x)
@@ -240,7 +251,7 @@ contains
     real(dp) :: x
     real(dp), parameter :: expected = 1.e10_dp
 
-    data => fson_parse("test2.json")
+    data => fson_parse(trim(adjustl(data_path)) // "test2.json")
     call fson_get(data, "long_integral_double", x)
     call test%assert(expected, x, "long integral double")
 
@@ -258,7 +269,7 @@ contains
     real(dp) :: x
     real(dp), parameter :: expected = 0.0002_dp
 
-    data => fson_parse("test2.json")
+    data => fson_parse(trim(adjustl(data_path)) // "test2.json")
     call fson_get(data, "long_frac_double", x)
     call test%assert(expected, x, "long frac double")
 
@@ -278,7 +289,7 @@ contains
     integer(kind = 8) :: i
     integer(kind = 8), parameter :: expected_int = 3155760000_8
 
-    data => fson_parse("test2.json")
+    data => fson_parse(trim(adjustl(data_path)) // "test2.json")
     call fson_get(data, "long_int", i)
     ! call test%assert(expected_int, i, "long int")
     call fson_get(data, "long_int", x)
@@ -305,7 +316,7 @@ contains
          ["alpha", "beta ", "gamma", "foo  ", "bar  ", "fubar"], &
          [count22, count21]))
     
-    data => fson_parse("test2.json")
+    data => fson_parse(trim(adjustl(data_path)) // "test2.json")
 
     call fson_get(data, "char_array", x1)
     call test%assert(expected1, x1, "1d char array")
@@ -329,7 +340,7 @@ contains
     type(fson_value), pointer :: dict, item
     character(len = 8) :: str
   
-    data => fson_parse("test3.json")
+    data => fson_parse(trim(adjustl(data_path)) // "test3.json")
 
     count = fson_value_count(data)
     call test%assert(2, count, "count")
