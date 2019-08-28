@@ -46,7 +46,8 @@ target_include_directories(FSON
 target_compile_options(FSON
     PUBLIC
     PRIVATE
-    $<$<OR:$<Fortran_COMPILER_ID:GNU>,$<Fortran_COMPILER_ID:G95>>:
+    $<$<OR:$<STREQUAL:"${CMAKE_Fortran_COMPILER_ID}","GNU">,
+           $<STREQUAL:"${CMAKE_Fortran_COMPILER_ID}","G95">>:
         -Wno-maybe-uninitialized
     >
 )
