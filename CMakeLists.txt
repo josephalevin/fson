@@ -150,6 +150,7 @@ foreach(test_name fson_test fson_test2)
         COMMAND ${CMAKE_CURRENT_BINARY_DIR}/zofu-driver
             ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/${test_name}_zofu.f90
             ${CMAKE_CURRENT_BINARY_DIR}/${test_name}_driver.f90
+            DEPENDS zofu-driver
         )
 
     add_executable(${test_name}
