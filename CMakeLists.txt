@@ -113,54 +113,55 @@ export(EXPORT fson-targets
 # Define the test routines
 #
 
-include(FetchContent OPTIONAL RESULT_VARIABLE fc_LOADED)
-if (${fc_LOADED} MATCHES NOTFOUND)
-    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FetchContent.cmake)
-endif()
-FetchContent_Declare(zofu
-    GIT_REPOSITORY https://github.com/acroucher/zofu.git
-)
-FetchContent_GetProperties(zofu)
-if (NOT zofu_POPULATED)
-    FetchContent_Populate(zofu)
-endif()
+option(ENABLE_TESTS "Build and enable unit tests" ON)
 
-# Building zofu could be replaced with the proper target if it had a
-# CMake build.
-add_library(zofu SHARED
-    ${zofu_SOURCE_DIR}/src/zofu.F90
-    ${zofu_SOURCE_DIR}/src/zofu_kinds.F90
-    ${zofu_SOURCE_DIR}/src/zofu_scan.F90
-    ${zofu_SOURCE_DIR}/src/zofu_str_utils.F90
-)
-add_executable(zofu-driver ${zofu_SOURCE_DIR}/src/zofu_driver.F90)
-target_link_libraries(zofu-driver zofu)
-
-# Defining each test is a matter of generating the source, building the
-# executable, and adding the test.
-enable_testing()
-foreach(test_name fson_test fson_test2)
-    add_library(${test_name}_lib
-        src/tests/${test_name}_zofu.f90
+if (ENABLE_TESTS)
+    include(FetchContent OPTIONAL RESULT_VARIABLE fc_LOADED)
+    if (${fc_LOADED} MATCHES NOTFOUND)
+        include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FetchContent.cmake)
+    endif()
+    FetchContent_Declare(zofu
+        GIT_REPOSITORY https://github.com/acroucher/zofu.git
     )
-    target_link_libraries(${test_name}_lib FSON::FSON zofu)
+    FetchContent_GetProperties(zofu)
+    if (NOT zofu_POPULATED)
+        FetchContent_Populate(zofu)
+    endif()
 
-    add_custom_command(OUTPUT
-        ${CMAKE_CURRENT_BINARY_DIR}/${test_name}_driver.f90
-        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/zofu-driver
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/${test_name}_zofu.f90
-            ${CMAKE_CURRENT_BINARY_DIR}/${test_name}_driver.f90
-            DEPENDS zofu-driver
+    # Building zofu could be replaced with the proper target if it had a
+    # CMake build.
+    add_library(zofu SHARED
+        ${zofu_SOURCE_DIR}/src/zofu.F90
+        ${zofu_SOURCE_DIR}/src/zofu_kinds.F90
+        ${zofu_SOURCE_DIR}/src/zofu_scan.F90
+        ${zofu_SOURCE_DIR}/src/zofu_str_utils.F90
+    )
+    add_executable(zofu-driver ${zofu_SOURCE_DIR}/src/zofu_driver.F90)
+    target_link_libraries(zofu-driver zofu)
+
+    # Defining each test is a matter of generating the source, building the
+    # executable, and adding the test.
+    enable_testing()
+    foreach(test_name fson_test fson_test2)
+        add_library(${test_name}_lib
+            src/tests/${test_name}_zofu.f90
         )
+        target_link_libraries(${test_name}_lib FSON::FSON zofu)
 
-    add_executable(${test_name}
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/${test_name}_zofu.f90
-        ${CMAKE_CURRENT_BINARY_DIR}/${test_name}_driver.f90)
-    target_link_libraries(${test_name} FSON::FSON zofu)
-    add_test(NAME ${test_name} COMMAND ${test_name}
-             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/tests)
-endforeach()
+        add_custom_command(OUTPUT
+            ${CMAKE_CURRENT_BINARY_DIR}/${test_name}_driver.f90
+            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/zofu-driver
+                ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/${test_name}_zofu.f90
+                ${CMAKE_CURRENT_BINARY_DIR}/${test_name}_driver.f90
+                DEPENDS zofu-driver
+            )
 
-# Register the package in the user's registry
-export(PACKAGE FSON)
+        add_executable(${test_name}
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/${test_name}_zofu.f90
+            ${CMAKE_CURRENT_BINARY_DIR}/${test_name}_driver.f90)
+        target_link_libraries(${test_name} FSON::FSON zofu)
+        add_test(NAME ${test_name} COMMAND ${test_name}
+                 WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/tests)
+    endforeach()
+endif()
 
