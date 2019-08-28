@@ -19,7 +19,7 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.6.1)
 
 cmake_policy(SET CMP0048 NEW) # To get package versioning working
 project(FSON VERSION 1.0.0 LANGUAGES Fortran C)
