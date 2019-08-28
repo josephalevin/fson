@@ -113,9 +113,9 @@ export(EXPORT fson-targets
 # Define the test routines
 #
 
-option(ENABLE_TESTS "Build and enable unit tests" ON)
+option(FSON_ENABLE_TESTS "Build and enable unit tests" ON)
 
-if (ENABLE_TESTS)
+if (FSON_ENABLE_TESTS)
     include(FetchContent OPTIONAL RESULT_VARIABLE fc_LOADED)
     if (${fc_LOADED} MATCHES NOTFOUND)
         include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/FetchContent.cmake)

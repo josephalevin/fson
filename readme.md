@@ -235,7 +235,7 @@ Some platforms are unable to build the [Zofu](https://github.com/acroucher/zofu)
 dependency, but the library builds correctly.  On these platforms, use
 
 ```bash
-cmake3 -DENABLE_TESTS:BOOL=OFF ...
+cmake3 -DFSON_ENABLE_TESTS:BOOL=OFF ...
 ```
 
 to disable the unit tests.
