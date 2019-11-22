@@ -35,9 +35,10 @@ add_library(FSON SHARED
 
 add_library(FSON::FSON ALIAS FSON)
 
+set(FSON_MODULE_DIR "fson/${CMAKE_Fortran_COMPILER_ID}-${CMAKE_Fortran_COMPILER_VERSION}")
 target_include_directories(FSON
     PUBLIC
-        $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:include/${FSON_MODULE_DIR}>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
@@ -70,7 +71,7 @@ install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/fson_path_m.mod
     ${CMAKE_CURRENT_BINARY_DIR}/fson_value_m.mod
     ${CMAKE_CURRENT_BINARY_DIR}/fson_string_m.mod
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${FSON_MODULE_DIR})
 
 install(EXPORT fson-targets
     FILE
