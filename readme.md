@@ -1,3 +1,5 @@
+![Unit tests](https://github.com/josephalevin/fson/workflows/Unit%20tests/badge.svg)
+
 Fortran 95 JSON Parser
 ======================
 
