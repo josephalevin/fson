@@ -189,7 +189,26 @@ methods.
 
 ### Meson
 
-TODO: Add instructions
+Once [Meson](https://mesonbuild.com) and
+[Ninja](https://ninja-build.org/) are installed on your system, FSON
+may be built, tested and installed as follows:
+
+```bash
+meson build
+cd build
+ninja
+ninja test # optional unit tests
+ninja install
+```
+
+For the Meson build, the unit tests use the
+[Zofu](https://github.com/acroucher/zofu) library. If this is not
+already installed on your system, it will be built as a Meson
+subproject of FSON.
+
+See the [Meson](https://mesonbuild.com) documentation for more
+information on customizing the build (e.g. specifying the install
+directory, build optimization etc.).
 
 ### CMake
 
@@ -202,7 +221,7 @@ mkdir bld
 cd bld
 cmake3 ..
 make
-make test # optional
+make test # optional unit tests
 make install
 ```
 
