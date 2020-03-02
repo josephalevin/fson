@@ -1,4 +1,4 @@
-![Unit tests](https://github.com/josephalevin/fson/workflows/Unit%20tests/badge.svg)
+![Unit tests](https://github.com/josephalevin/fson/workflows/Unit%20tests/badge.svg) ![Unit tests (CMake)](https://github.com/josephalevin/fson/workflows/Unit%20tests%20(CMake)/badge.svg)
 
 Fortran 95 JSON Parser
 ======================
