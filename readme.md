@@ -184,8 +184,14 @@ make
 make install
 ```
 
-For a more automated installation, see one of the following installation
-methods.
+For the Makefile build, unit tests can be run using the
+[FRUIT](https://sourceforge.net/projects/fortranxunit/) library,
+together with [FRUITPy](https://github.com/acroucher/FRUITPy) which is
+a Python interface to FRUIT. When these are installed, the
+`fson_test.py` script in the FSON base directory can be run to execute
+the unit tests.
+
+For a more automated installation, see one of the following installation methods.
 
 ### Meson
 
