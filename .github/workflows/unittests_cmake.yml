@@ -1,0 +1,28 @@
+name: Unit tests (CMake)
+
+on:
+  push:
+    branches:
+    - '*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install compiler
+      run: sudo apt-get install gfortran
+    - name: Install build tools
+      run: |
+        sudo apt-get install cmake
+    - name: Show versions
+      run: |
+        gfortran --version
+        cmake --version
+    - name: Unit tests
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make
+        make test
