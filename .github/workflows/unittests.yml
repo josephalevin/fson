@@ -1,0 +1,37 @@
+name: Unit tests
+
+on:
+  push:
+    branches:
+    - '*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Install compiler
+      run: sudo apt-get install gfortran
+    - name: Install build tools
+      run: |
+        sudo apt-get install ninja-build
+        pip install --user meson
+    - name: Update path
+      run: echo "::add-path::$HOME/.local/bin"
+    - name: Show versions
+      run: |
+        gfortran --version
+        meson --version
+    - name: Install MPI
+      run: |
+        sudo apt-get install libmpich-dev mpich
+    - name: Unit tests
+      run: |
+        meson build
+        cd build
+        meson test
+        meson test --wrap="mpiexec -np 2"

@@ -291,7 +291,7 @@ contains
 
     data => fson_parse(trim(adjustl(data_path)) // "test2.json")
     call fson_get(data, "long_int", i)
-    ! call test%assert(expected_int, i, "long int")
+    call test%assert(expected_int, i, "long int")
     call fson_get(data, "long_int", x)
     call test%assert(expected, x, "long int to double")
 

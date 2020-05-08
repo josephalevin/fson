@@ -1,3 +1,5 @@
+![Unit tests](https://github.com/josephalevin/fson/workflows/Unit%20tests/badge.svg) ![Unit tests (CMake)](https://github.com/josephalevin/fson/workflows/Unit%20tests%20(CMake)/badge.svg)
+
 Fortran 95 JSON Parser
 ======================
 
@@ -164,3 +166,104 @@ JSON Path
 |    .     | Child operator           |
 |    []    | Array element            |
 ```
+
+Installation
+------------
+
+Three methods for installing FSON are provided: a regular Makefile, a
+[Meson](https://mesonbuild.com) build, and a [CMake](https://cmake.org)
+build.  Below we give a brief overview of how to use each one.
+
+### Makefile
+
+Installing via Makefile is simply a matter of opening the provided
+`makefile`, updating the appropriate variables near the top, and running
+
+```bash
+make
+make install
+```
+
+For the Makefile build, unit tests can be run using the
+[FRUIT](https://sourceforge.net/projects/fortranxunit/) library,
+together with [FRUITPy](https://github.com/acroucher/FRUITPy) which is
+a Python interface to FRUIT. When these are installed, the
+`fson_test.py` script in the FSON base directory can be run to execute
+the unit tests.
+
+For a more automated installation, see one of the following installation methods.
+
+### Meson
+
+Once [Meson](https://mesonbuild.com) and
+[Ninja](https://ninja-build.org/) are installed on your system, FSON
+may be built, tested and installed as follows:
+
+```bash
+meson build
+cd build
+ninja
+ninja test # optional unit tests
+ninja install
+```
+
+For the Meson build, the unit tests use the
+[Zofu](https://github.com/acroucher/zofu) library. If this is not
+already installed on your system, it will be built as a Meson
+subproject of FSON.
+
+See the [Meson](https://mesonbuild.com) documentation for more
+information on customizing the build (e.g. specifying the install
+directory, build optimization etc.).
+
+### CMake
+
+The provided `CMakeLists.txt` runs with CMake 3 to configure, build and
+install FSON.  The simplest means to build and install using CMake is to
+run
+
+```bash
+mkdir bld
+cd bld
+cmake3 ..
+make
+make test # optional unit tests
+make install
+```
+
+However, all of the command options available to CMake are supported.
+For example, to enable building shared libraries use the
+`-DBUILD_SHARED_LIBS:BOOL=ON` flag and to override the installation
+prefix use `-DCMAKE_INSTALL_PREFIX=...`.  Thus the command
+
+```bash
+cmake3 -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_INSTALL_PREFIX=$HOME
+```
+
+would configure FSON to build a shared library and install under your
+home directory.
+
+Once FSON has been built and installed, you can import it into your
+CMake supported project using
+
+```cmake
+find_package(FSON)
+...
+add_executable(mytarget
+...
+target_link_libraries(mytarget FSON::FSON)
+```
+
+The CMake build require CMake version 3.6.1 or higher and `git` version
+1.6.5 or newer.  It may work with older versions of CMake, but this is
+what has been tested.
+
+Some platforms are unable to build the [Zofu](https://github.com/acroucher/zofu)
+dependency, but the library builds correctly.  On these platforms, use
+
+```bash
+cmake3 -DFSON_ENABLE_TESTS:BOOL=OFF ...
+```
+
+to disable the unit tests.
+
