@@ -737,7 +737,7 @@ contains
           allocate(arr(size(defaultarr,1),size(defaultarr,2)))
           arr=defaultarr
       elseif (statusflag > 0) then
-          print *, "Type is not a 1D character array at", path
+          print *, "Type is not a 2D integer array at", path
           call exit(statusflag)
       endif
 
@@ -771,7 +771,7 @@ contains
           allocate(arr(size(defaultarr,1),size(defaultarr,2)))
           arr=defaultarr
       elseif (statusflag > 0) then
-          print *, "Type is not a 1D character array at", path
+          print *, "Type is not a 2D real array at", path
           call exit(statusflag)
       endif
 
@@ -805,7 +805,7 @@ contains
           allocate(arr(size(defaultarr,1),size(defaultarr,2)))
           arr=defaultarr
       elseif (statusflag > 0) then
-          print *, "Type is not a 1D character array at", path
+          print *, "Type is not a 2D double array at", path
           call exit(statusflag)
       endif
 
@@ -839,7 +839,7 @@ contains
           allocate(arr(size(defaultarr,1),size(defaultarr,2)))
           arr=defaultarr
       elseif (statusflag > 0) then
-          print *, "Type is not a 1D character array at", path
+          print *, "Type is not a 2D logical array at", path
           call exit(statusflag)
       endif
 
@@ -873,7 +873,7 @@ contains
           allocate(arr(size(defaultarr,1),size(defaultarr,2)))
           arr=defaultarr
       elseif (statusflag > 0) then
-          print *, "Type is not a 1D character array at", path
+          print *, "Type is not a 2D character array at", path
           call exit(statusflag)
       endif
 
