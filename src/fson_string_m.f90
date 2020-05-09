@@ -27,7 +27,7 @@ module fson_string_m
 
     private
 
-    public :: fson_string, fson_string_create, fson_string_destroy, fson_string_length, fson_string_append, fson_string_clear 
+    public :: fson_string, fson_string_create, fson_string_destroy, fson_string_length, fson_string_append
     public :: fson_string_equals, fson_string_copy
 
     integer, parameter :: BLOCK_SIZE = 32
@@ -44,6 +44,7 @@ module fson_string_m
 
     interface fson_string_copy
         module procedure copy_chars
+        module procedure copy_string
     end interface fson_string_copy
 
     interface fson_string_equals
@@ -171,7 +172,7 @@ contains
     subroutine copy_chars(this, to)
         type(fson_string), pointer :: this
         character(len = *), intent(inout) :: to
-        integer :: length
+        integer :: length, i
 
         length = min(string_length(this), len(to))
 
@@ -187,7 +188,26 @@ contains
 
     end subroutine copy_chars
 
+    !
+    ! COPY string
+    !
+    subroutine copy_string(this, to)
+        character(len = *), intent(in) :: this
+        character(len = *), intent(inout) :: to
+        integer :: length, i
 
+        length = min( len(this) , len(to))
+
+        do i = 1, length
+            to(i:i) = this(i:i)
+        end do
+
+        ! pad with nothing
+        do i = length + 1, len(to)
+            to(i:i) = ""
+        end do
+
+    end subroutine copy_string
 
     !
     ! CLEAR
