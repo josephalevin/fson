@@ -22,7 +22,7 @@
 cmake_minimum_required(VERSION 3.6.1)
 
 cmake_policy(SET CMP0048 NEW) # To get package versioning working
-project(FSON VERSION 1.0.2 LANGUAGES Fortran C)
+project(FSON VERSION 1.0.3 LANGUAGES Fortran C)
 
 set(CMAKE_MACOSX_RPATH 1)
 
