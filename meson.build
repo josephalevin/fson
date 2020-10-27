@@ -32,12 +32,20 @@ if includedir != ''
   foreach m: fson_modules
     fson_objs += ['src_' + m + '.o']
   endforeach
+
   # NB this is a temporary measure until Meson gets specific
   # functionality for installing Fortran modules:
-  install_subdir(join_paths('build', 'fson@sha'),
+  if meson.version() < '0.55'
+    mod_dir = 'fson@sha'
+  else
+    mod_dir = fson.full_path().split('/').get(-1) + '.p'
+  endif
+  mod_path = join_paths(meson.current_build_dir(), mod_dir)
+  install_subdir(mod_path,
                  install_dir: module_install_dir,
                  strip_directory: true,
                  exclude_files: fson_objs)
+
   pkg = import('pkgconfig')
   pkg.generate(fson,
                description: 'Fortran 95 JSON parser')
