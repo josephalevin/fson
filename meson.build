@@ -35,7 +35,7 @@ if includedir != ''
 
   # NB this is a temporary measure until Meson gets specific
   # functionality for installing Fortran modules:
-  if meson.version() < '0.55'
+  if meson.version().version_compare('<0.55')
     mod_dir = 'fson@sha'
   else
     mod_dir = fson.full_path().split('/').get(-1) + '.p'
