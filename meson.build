@@ -1,6 +1,6 @@
 # FSON Meson build script
 
-project('FSON', ['fortran', 'c'], version: '1.0.4')
+project('FSON', ['fortran', 'c'], version: '1.0.5')
 
 zofu  = dependency('zofu',  version: '>=0.1.0', fallback: ['zofu', 'zofu_dep'])
 
