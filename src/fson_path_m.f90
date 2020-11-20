@@ -82,7 +82,7 @@ contains
     ! []    = child array element
     !
     recursive subroutine get_by_path(this, path, p)
-        type(fson_value), pointer :: this, p        
+        type(fson_value), pointer :: this, p
         character(len=*) :: path
         integer :: i, length, child_i
         character :: c
@@ -189,10 +189,11 @@ contains
     !
     ! GET INTEGER
     !
-    subroutine get_integer(this, path, value)
+    subroutine get_integer(this, path, value, defaultvalue)
         type(fson_value), pointer :: this, p
         character(len=*), optional :: path
-        integer :: value        
+        integer :: value
+        integer, intent(in), optional:: defaultvalue
         
         
         nullify(p)                
@@ -203,8 +204,13 @@ contains
         end if
         
         if(.not.associated(p)) then
-            print *, "Unable to resolve path: ", path
-            call exit(1)
+            if(present(defaultvalue)) then
+                value=defaultvalue
+                return
+            else
+                print *, "Unable to resolve path: ", path
+                call exit(1)
+            end if
         end if
                 
         
@@ -228,10 +234,11 @@ contains
     !
     ! GET LONG INTEGER
     !
-    subroutine get_long_integer(this, path, value)
+    subroutine get_long_integer(this, path, value, defaultvalue)
       type(fson_value), pointer :: this, p
       character(len=*), optional :: path
       integer(kind = 8) :: value
+      integer(kind = 8), intent(in), optional:: defaultvalue
 
       nullify(p)
       if(present(path)) then
@@ -241,8 +248,13 @@ contains
       end if
 
       if(.not.associated(p)) then
-         print *, "Unable to resolve path: ", path
-         call exit(1)
+            if(present(defaultvalue)) then
+                value=defaultvalue
+                return
+            else
+                print *, "Unable to resolve path: ", path
+                call exit(1)
+            end if
       end if
 
       if(p % value_type == TYPE_INTEGER) then
@@ -265,10 +277,11 @@ contains
     !
     ! GET REAL
     !
-    subroutine get_real(this, path, value)
+    subroutine get_real(this, path, value, defaultvalue)
         type(fson_value), pointer :: this, p
         character(len=*), optional :: path
-        real :: value        
+        real :: value
+        real, intent(in), optional:: defaultvalue
         
         
         nullify(p)                
@@ -280,8 +293,13 @@ contains
         end if
         
         if(.not.associated(p)) then
-            print *, "Unable to resolve path: ", path
-            call exit(1)
+            if(present(defaultvalue)) then
+                value=defaultvalue
+                return
+            else
+                print *, "Unable to resolve path: ", path
+                call exit(1)
+            end if
         end if
                 
         
@@ -305,10 +323,11 @@ contains
     !
     ! GET DOUBLE
     !
-    subroutine get_double(this, path, value)
+    subroutine get_double(this, path, value, defaultvalue)
         type(fson_value), pointer :: this, p
         character(len=*), optional :: path
-        double precision :: value        
+        double precision :: value   
+        double precision, intent(in), optional:: defaultvalue     
         
         
         nullify(p)                
@@ -320,8 +339,13 @@ contains
         end if
         
         if(.not.associated(p)) then
-            print *, "Unable to resolve path: ", path
-            call exit(1)
+            if(present(defaultvalue)) then
+                value=defaultvalue
+                return
+            else
+                print *, "Unable to resolve path: ", path
+                call exit(1)
+            end if
         end if
                 
         
@@ -346,10 +370,11 @@ contains
     !
     ! GET LOGICAL
     !
-    subroutine get_logical(this, path, value)
+    subroutine get_logical(this, path, value, defaultvalue)
         type(fson_value), pointer :: this, p
         character(len=*), optional :: path
         logical :: value        
+        logical, intent(in), optional:: defaultvalue 
         
         
         nullify(p)                
@@ -361,8 +386,13 @@ contains
         end if
         
         if(.not.associated(p)) then
-            print *, "Unable to resolve path: ", path
-            call exit(1)
+            if(present(defaultvalue)) then
+                value=defaultvalue
+                return
+            else
+                print *, "Unable to resolve path: ", path
+                call exit(1)
+            end if
         end if
                 
         
@@ -376,14 +406,15 @@ contains
         end if
         
     end subroutine get_logical
-    
+
     !
     ! GET CHARS
     !
-    subroutine get_chars(this, path, value)
+    subroutine get_chars(this, path, value, defaultvalue)
         type(fson_value), pointer :: this, p
         character(len=*), optional :: path
-        character(len=*) :: value  
+        character(len=*) :: value 
+        character(len=*), intent(in), optional:: defaultvalue 
         
         nullify(p)                
         
@@ -394,8 +425,13 @@ contains
         end if
         
         if(.not.associated(p)) then
-            print *, "Unable to resolve path: ", path
-            call exit(1)
+            if(present(defaultvalue)) then
+                call fson_string_copy(defaultvalue, value)
+                return
+            else
+                print *, "Unable to resolve path: ", path
+                call exit(1)
+            end if
         end if
                 
         
@@ -412,15 +448,17 @@ contains
     ! GET ARRAY 1D
     !
     
-    subroutine get_array_1d(this, path, array_callback)
+    subroutine get_array_1d(this, path, array_callback, statusflag)
         type(fson_value), pointer :: this
         character(len = *), optional :: path
         procedure(array_callback_1d) :: array_callback
 
         type(fson_value), pointer :: p, element
         integer :: index, count
+        integer, intent(out) :: statusflag
                 
         nullify(p)                
+        statusflag=0
         
         ! resolve the path to the value
         if(present(path)) then
@@ -430,8 +468,8 @@ contains
         end if
             
         if(.not.associated(p)) then
-            print *, "Unable to resolve path: ", path
-            call exit(1)
+            statusflag=-1
+            return
         end if
         
         if(p % value_type == TYPE_ARRAY) then            
@@ -442,8 +480,8 @@ contains
                 element => element % next
             end do
         else
-            print *, "Resolved value is not an array. ", path
-            call exit(1)
+            statusflag=1
+            return
         end if
 
         if (associated(p)) nullify(p)
@@ -453,16 +491,24 @@ contains
 !
 ! GET ARRAY INTEGER 1D
 !
-    subroutine get_array_1d_integer(this, path, arr)
+    subroutine get_array_1d_integer(this, path, arr, defaultarr)
 
       implicit none
       type(fson_value), pointer, intent(in) :: this
       character(len=*), intent(in), optional :: path   
       integer, allocatable, intent(out) :: arr(:)
+      integer, dimension(:), intent(in), optional :: defaultarr
+      integer :: statusflag
 
       if (allocated(arr)) deallocate(arr)
-      call get_array_1d(this, path, array_callback_1d_integer)
-
+      call get_array_1d(this, path, array_callback_1d_integer,statusflag)
+      if (( statusflag == -1 ) .and. present(defaultarr) ) then
+          allocate(arr(size(defaultarr)))
+          arr=defaultarr
+      elseif (statusflag > 0) then
+          print *, "Type is not a 1D integer array at", path
+          call exit(statusflag)
+      endif
     contains
 
       subroutine array_callback_1d_integer(element, i, count)
@@ -478,15 +524,24 @@ contains
 !
 ! GET ARRAY REAL 1D
 !
-    subroutine get_array_1d_real(this, path, arr)
+    subroutine get_array_1d_real(this, path, arr, defaultarr)
 
       implicit none
       type(fson_value), pointer, intent(in) :: this
       character(len=*), intent(in), optional :: path   
       real, allocatable, intent(out) :: arr(:)
+      real, dimension(:), intent(in), optional :: defaultarr
+      integer :: statusflag
 
       if (allocated(arr)) deallocate(arr)
-      call get_array_1d(this, path, array_callback_1d_real)
+      call get_array_1d(this, path, array_callback_1d_real, statusflag)
+      if (( statusflag == -1 ) .and. present(defaultarr) ) then
+          allocate(arr(size(defaultarr)))
+          arr=defaultarr
+      elseif (statusflag > 0) then
+          print *, "Type is not a 1D real array at", path
+          call exit(statusflag)
+      endif
 
     contains
 
@@ -503,15 +558,24 @@ contains
 !
 ! GET ARRAY DOUBLE 1D
 !
-    subroutine get_array_1d_double(this, path, arr)
+    subroutine get_array_1d_double(this, path, arr, defaultarr)
 
       implicit none
       type(fson_value), pointer, intent(in) :: this
       character(len=*), intent(in), optional :: path   
       double precision, allocatable, intent(out) :: arr(:)
+      double precision, dimension(:), intent(in), optional :: defaultarr
+      integer :: statusflag
 
       if (allocated(arr)) deallocate(arr)
-      call get_array_1d(this, path, array_callback_1d_double)
+      call get_array_1d(this, path, array_callback_1d_double, statusflag)
+      if (( statusflag == -1 ) .and. present(defaultarr) ) then
+          allocate(arr(size(defaultarr)))
+          arr=defaultarr
+      elseif (statusflag > 0) then
+          print *, "Type is not a 1D double array at", path
+          call exit(statusflag)
+      endif
 
     contains
 
@@ -528,15 +592,24 @@ contains
 !
 ! GET ARRAY LOGICAL 1D
 !
-    subroutine get_array_1d_logical(this, path, arr)
+    subroutine get_array_1d_logical(this, path, arr, defaultarr)
 
       implicit none
       type(fson_value), pointer, intent(in) :: this
       character(len=*), intent(in), optional :: path   
       logical, allocatable, intent(out) :: arr(:)
+      logical, dimension(:), intent(in), optional :: defaultarr
+      integer :: statusflag
 
       if (allocated(arr)) deallocate(arr)
-      call get_array_1d(this, path, array_callback_1d_logical)
+      call get_array_1d(this, path, array_callback_1d_logical, statusflag)
+      if (( statusflag == -1 ) .and. present(defaultarr) ) then
+          allocate(arr(size(defaultarr)))
+          arr=defaultarr
+      elseif (statusflag > 0) then
+          print *, "Type is not a 1D logical array at", path
+          call exit(statusflag)
+      endif
 
     contains
 
@@ -553,15 +626,24 @@ contains
 !
 ! GET ARRAY CHAR 1D
 !
-    subroutine get_array_1d_char(this, path, arr)
+    subroutine get_array_1d_char(this, path, arr, defaultarr)
 
       implicit none
       type(fson_value), pointer, intent(in) :: this
       character(len=*), intent(in), optional :: path
       character(len = *), allocatable, intent(out) :: arr(:)
+      character, dimension(:), intent(in), optional :: defaultarr
+      integer :: statusflag
 
       if (allocated(arr)) deallocate(arr)
-      call get_array_1d(this, path, array_callback_1d_char)
+      call get_array_1d(this, path, array_callback_1d_char, statusflag)
+      if (( statusflag == -1 ) .and. present(defaultarr) ) then
+          allocate(arr(size(defaultarr)))
+          arr=defaultarr
+      elseif (statusflag > 0) then
+          print *, "Type is not a 1D character array at", path
+          call exit(statusflag)
+      endif
 
     contains
 
@@ -580,16 +662,18 @@ contains
     ! GET ARRAY 2D
     !
     
-    subroutine get_array_2d(this, path, array_callback)
+    subroutine get_array_2d(this, path, array_callback,statusflag)
         type(fson_value), pointer :: this
         character(len = *), optional :: path
         procedure(array_callback_2d) :: array_callback
 
         type(fson_value), pointer :: p, element, item
         integer :: i1, i2, count1, count2, c
-                
+        integer, intent(out) :: statusflag
+
         nullify(p)                
-        
+        statusflag=0
+
         ! resolve the path to the value
         if(present(path)) then
             call get_by_path(this=this, path=path, p=p)
@@ -598,8 +682,8 @@ contains
         end if
             
         if(.not.associated(p)) then
-            print *, "Unable to resolve path: ", path
-            call exit(1)
+            statusflag = -1
+            return
         end if
         
         if(p % value_type == TYPE_ARRAY) then            
@@ -627,8 +711,8 @@ contains
                end if
             end do
         else
-            print *, "Resolved value is not an array. ", path
-            call exit(1)
+            statusflag = 1
+            return
         end if
 
         if (associated(p)) nullify(p)
@@ -638,15 +722,24 @@ contains
 !
 ! GET ARRAY INTEGER 2D
 !
-    subroutine get_array_2d_integer(this, path, arr)
+    subroutine get_array_2d_integer(this, path, arr, defaultarr)
 
       implicit none
       type(fson_value), pointer, intent(in) :: this
       character(len=*), intent(in), optional :: path   
       integer, allocatable, intent(out) :: arr(:, :)
+      integer, dimension(:,:), intent(in), optional :: defaultarr
+      integer :: statusflag
 
       if (allocated(arr)) deallocate(arr)
-      call get_array_2d(this, path, array_callback_2d_integer)
+      call get_array_2d(this, path, array_callback_2d_integer, statusflag)
+      if (( statusflag == -1 ) .and. present(defaultarr) ) then
+          allocate(arr(size(defaultarr,1),size(defaultarr,2)))
+          arr=defaultarr
+      elseif (statusflag > 0) then
+          print *, "Type is not a 2D integer array at", path
+          call exit(statusflag)
+      endif
 
     contains
 
@@ -663,15 +756,24 @@ contains
 !
 ! GET ARRAY REAL 2D
 !
-    subroutine get_array_2d_real(this, path, arr)
+    subroutine get_array_2d_real(this, path, arr, defaultarr)
 
       implicit none
       type(fson_value), pointer, intent(in) :: this
       character(len=*), intent(in), optional :: path   
       real, allocatable, intent(out) :: arr(:, :)
+      real, dimension(:,:), intent(in), optional :: defaultarr
+      integer :: statusflag
 
       if (allocated(arr)) deallocate(arr)
-      call get_array_2d(this, path, array_callback_2d_real)
+      call get_array_2d(this, path, array_callback_2d_real, statusflag)
+      if (( statusflag == -1 ) .and. present(defaultarr) ) then
+          allocate(arr(size(defaultarr,1),size(defaultarr,2)))
+          arr=defaultarr
+      elseif (statusflag > 0) then
+          print *, "Type is not a 2D real array at", path
+          call exit(statusflag)
+      endif
 
     contains
 
@@ -688,15 +790,24 @@ contains
 !
 ! GET ARRAY DOUBLE 2D
 !
-    subroutine get_array_2d_double(this, path, arr)
+    subroutine get_array_2d_double(this, path, arr, defaultarr)
 
       implicit none
       type(fson_value), pointer, intent(in) :: this
       character(len=*), intent(in), optional :: path   
       double precision, allocatable, intent(out) :: arr(:, :)
+      double precision, dimension(:,:), intent(in), optional :: defaultarr
+      integer :: statusflag
 
       if (allocated(arr)) deallocate(arr)
-      call get_array_2d(this, path, array_callback_2d_double)
+      call get_array_2d(this, path, array_callback_2d_double, statusflag)
+      if (( statusflag == -1 ) .and. present(defaultarr) ) then
+          allocate(arr(size(defaultarr,1),size(defaultarr,2)))
+          arr=defaultarr
+      elseif (statusflag > 0) then
+          print *, "Type is not a 2D double array at", path
+          call exit(statusflag)
+      endif
 
     contains
 
@@ -713,15 +824,24 @@ contains
 !
 ! GET ARRAY LOGICAL 2D
 !
-    subroutine get_array_2d_logical(this, path, arr)
+    subroutine get_array_2d_logical(this, path, arr, defaultarr)
 
       implicit none
       type(fson_value), pointer, intent(in) :: this
       character(len=*), intent(in), optional :: path   
       logical, allocatable, intent(out) :: arr(:, :)
+      logical, dimension(:,:), intent(in), optional :: defaultarr
+      integer :: statusflag
 
       if (allocated(arr)) deallocate(arr)
-      call get_array_2d(this, path, array_callback_2d_logical)
+      call get_array_2d(this, path, array_callback_2d_logical, statusflag)
+      if (( statusflag == -1 ) .and. present(defaultarr) ) then
+          allocate(arr(size(defaultarr,1),size(defaultarr,2)))
+          arr=defaultarr
+      elseif (statusflag > 0) then
+          print *, "Type is not a 2D logical array at", path
+          call exit(statusflag)
+      endif
 
     contains
 
@@ -738,15 +858,24 @@ contains
 !
 ! GET ARRAY CHAR 2D
 !
-    subroutine get_array_2d_char(this, path, arr)
+    subroutine get_array_2d_char(this, path, arr, defaultarr)
 
       implicit none
       type(fson_value), pointer, intent(in) :: this
       character(len=*), intent(in), optional :: path
       character(len = *), allocatable, intent(out) :: arr(:, :)
+      character, dimension(:,:), intent(in), optional :: defaultarr
+      integer :: statusflag
 
       if (allocated(arr)) deallocate(arr)
-      call get_array_2d(this, path, array_callback_2d_char)
+      call get_array_2d(this, path, array_callback_2d_char, statusflag)
+      if (( statusflag == -1 ) .and. present(defaultarr) ) then
+          allocate(arr(size(defaultarr,1),size(defaultarr,2)))
+          arr=defaultarr
+      elseif (statusflag > 0) then
+          print *, "Type is not a 2D character array at", path
+          call exit(statusflag)
+      endif
 
     contains
 

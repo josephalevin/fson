@@ -32,14 +32,18 @@ program example2
     
     ! Functions for accessing data as an array
     use fson_value_m, only: fson_value_count, fson_value_get
-    character(len=1024) :: strval, strval2, inputString
+    character(len=1024) :: strval, strval2, strval3, inputString
+    character :: gender
     integer i
+    real :: height
+    real, allocatable :: location(:)
 
     ! Declare a pointer variables.  Always use a pointer with fson_value.
     type(fson_value), pointer :: json_data, array, item
 
     inputString = '{&
     &"name"       : {"first": "John", "last" : "Smith"},&
+    &"gender"     : "M",&
     &"age"        : 25,&
     &"address"    :&
     &  { "streetAddress": "21 2nd Street",&
@@ -56,13 +60,23 @@ program example2
     ! Get the first and last name and print them
     call fson_get(json_data, "name.first", strval)
     call fson_get(json_data, "name.last",  strval2)
+    call fson_get(json_data, "name.prefix",strval3, "Mr.")
+    call fson_get(json_data, "gender",gender, 'M')
     print *, "name.first = ", trim(strval)
     print *, "name.last  = ", trim(strval2)
+    print *, "name.prefix= ", trim(strval3)
+    print *, "name.gender= ", gender
+
+    call fson_get(json_data, "height",  height, 0.0)
+    print *, "height= ", height
 
     ! Use a lookup string to get the first phone number
     call fson_get(json_data, "PhoneNumber[1].number", strval)     
     print *, "PhoneNumber[1].number = ", trim(strval)
     print *, ""
+
+    call fson_get(json_data, "location", location, (/0.0, 0.0/))
+    print *, "Location = [ ", location(1), ",", location(2), "]"
 
     ! Get the phone numbers as an array
     call fson_get(json_data, "PhoneNumber", array)
@@ -82,6 +96,7 @@ program example2
     end do
 
     ! clean up
+    if(allocated(location)) deallocate(location)
     call fson_destroy(json_data)
 
 end program example2
