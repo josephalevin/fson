@@ -118,8 +118,12 @@ export(EXPORT fson-targets
 option(FSON_ENABLE_TESTS "Build and enable unit tests" ON)
 
 if (FSON_ENABLE_TESTS)
+    list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
     find_package(ZOFU QUIET)
-    if (NOT ZOFU_FOUND AND NOT ZOFU_DRIVER)
+    if (NOT ZOFU_FOUND OR
+            NOT ZOFU_DRIVER OR
+            NOT ZOFU_LIBRARY OR
+            NOT ZOFU_MODULE_PATH)
         message("Fetching and building external ZOFU")
         include(FetchContent OPTIONAL RESULT_VARIABLE fc_LOADED)
         if (${fc_LOADED} MATCHES NOTFOUND)
