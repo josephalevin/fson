@@ -118,6 +118,9 @@ export(EXPORT fson-targets
 option(FSON_ENABLE_TESTS "Build and enable unit tests" ON)
 
 if (FSON_ENABLE_TESTS)
+    # Use the distributed copy of FindZOFU.cmake if we don't find a
+    # system wide version.  Note this should be updated if this becomes
+    # default available.
     list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
     find_package(ZOFU QUIET)
     if (NOT ZOFU_FOUND OR
@@ -137,8 +140,6 @@ if (FSON_ENABLE_TESTS)
             FetchContent_Populate(zofu)
         endif()
 
-        # Building zofu could be replaced with the proper target if it had a
-        # CMake build.
         add_library(zofu SHARED
             ${zofu_SOURCE_DIR}/src/zofu.F90
             ${zofu_SOURCE_DIR}/src/zofu_kinds.F90
