@@ -146,6 +146,7 @@ if (FSON_ENABLE_TESTS)
 
         set(ZOFU_LIBRARY zofu)
         set(ZOFU_DRIVER ${CMAKE_CURRENT_BINARY_DIR}/zofu-driver)
+        set(ZOFU_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR})
     endif()
 
     # Defining each test is a matter of generating the source, building the
@@ -155,7 +156,8 @@ if (FSON_ENABLE_TESTS)
         add_library(${test_name}_lib
             src/tests/${test_name}_zofu.f90
         )
-    target_link_libraries(${test_name}_lib FSON::FSON ${ZOFU_LIBRARY})
+        target_link_libraries(${test_name}_lib FSON::FSON ${ZOFU_LIBRARY})
+        target_include_directories(${test_name}_lib PUBLIC ${ZOFU_MODULE_PATH})
 
         add_custom_command(OUTPUT
             ${CMAKE_CURRENT_BINARY_DIR}/${test_name}_driver.f90
@@ -169,6 +171,7 @@ if (FSON_ENABLE_TESTS)
             ${CMAKE_CURRENT_SOURCE_DIR}/src/tests/${test_name}_zofu.f90
             ${CMAKE_CURRENT_BINARY_DIR}/${test_name}_driver.f90)
         target_link_libraries(${test_name} FSON::FSON ${ZOFU_LIBRARY})
+        target_include_directories(${test_name} PUBLIC ${ZOFU_MODULE_PATH})
         add_test(NAME ${test_name} COMMAND ${test_name}
                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src/tests)
     endforeach()
